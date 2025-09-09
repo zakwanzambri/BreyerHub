@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BreyerHub - Portal Komuniti Kolej</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-university"></i> BreyerHub</h1>
+            <p>Portal Komuniti Kolej - Memudahkan Kehidupan Harian Anda</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#home" class="nav-link active" data-section="home"><i class="fas fa-home"></i> Utama</a></li>
+                <li><a href="#programs" class="nav-link" data-section="programs"><i class="fas fa-graduation-cap"></i> Program</a></li>
+                <li><a href="#schedule" class="nav-link" data-section="schedule"><i class="fas fa-calendar"></i> Jadual</a></li>
+                <li><a href="#calculator" class="nav-link" data-section="calculator"><i class="fas fa-calculator"></i> Kalkulator GPA</a></li>
+                <li><a href="#canteen" class="nav-link" data-section="canteen"><i class="fas fa-utensils"></i> Menu Kantin</a></li>
+                <li><a href="#contacts" class="nav-link" data-section="contacts"><i class="fas fa-phone"></i> Hubungi</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="welcome-card">
+                <h2>Selamat Datang ke BreyerHub!</h2>
+                <p>Platform ini direka khas untuk warga kolej yang menawarkan 5 program diploma utama: Culinary, Administrative Management, Computer System, Food & Beverage Management, dan Electrical Wiring & Maintenance.</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>Info Program</h3>
+                        <p>Maklumat lengkap 5 program diploma yang tersedia</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Jadual Mengikut Program</h3>
+                        <p>Urus jadual kelas mengikut program diploma anda</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Kalkulator GPA</h3>
+                        <p>Kira GPA anda secara automatik dan tepat</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-utensils"></i>
+                        <h3>Menu Kantin</h3>
+                        <p>Menu harian yang sesuai untuk semua program</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-address-book"></i>
+                        <h3>Direktori Hubungan</h3>
+                        <p>Maklumat hubungan penting kolej dan fakulti</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Programs Section -->
+        <section id="programs" class="section">
+            <h2>Program Diploma Tersedia</h2>
+            <div class="programs-container">
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Diploma in Culinary</h3>
+                    <p>Program komprehensif dalam seni masakan dan pengurusan dapur profesional. Merangkumi teknik masakan tempatan dan antarabangsa.</p>
+                    <div class="program-details">
+                        <span class="duration"><i class="fas fa-clock"></i> 2.5 Tahun</span>
+                        <span class="intake"><i class="fas fa-calendar-plus"></i> Februari & September</span>
+                    </div>
+                </div>
+
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>Diploma in Administrative Management</h3>
+                    <p>Fokus kepada kemahiran pengurusan pejabat, komunikasi perniagaan, dan pentadbiran yang berkesan dalam organisasi moden.</p>
+                    <div class="program-details">
+                        <span class="duration"><i class="fas fa-clock"></i> 2.5 Tahun</span>
+                        <span class="intake"><i class="fas fa-calendar-plus"></i> Februari & September</span>
+                    </div>
+                </div>
+
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Diploma in Computer System</h3>
+                    <p>Mendalami sistem komputer, rangkaian, programming, dan teknologi maklumat untuk industri 4.0.</p>
+                    <div class="program-details">
+                        <span class="duration"><i class="fas fa-clock"></i> 2.5 Tahun</span>
+                        <span class="intake"><i class="fas fa-calendar-plus"></i> Februari & September</span>
+                    </div>
+                </div>
+
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-wine-glass-alt"></i>
+                    </div>
+                    <h3>Diploma in Food & Beverage Management</h3>
+                    <p>Pengurusan holistik dalam industri makanan dan minuman, termasuk operasi restoran dan hospitaliti.</p>
+                    <div class="program-details">
+                        <span class="duration"><i class="fas fa-clock"></i> 2.5 Tahun</span>
+                        <span class="intake"><i class="fas fa-calendar-plus"></i> Februari & September</span>
+                    </div>
+                </div>
+
+                <div class="program-card">
+                    <div class="program-icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                    <h3>Diploma in Electrical Wiring & Maintenance</h3>
+                    <p>Kemahiran praktikal dan teori dalam pemasangan elektrik, penyelenggaraan, dan keselamatan elektrik industri.</p>
+                    <div class="program-details">
+                        <span class="duration"><i class="fas fa-clock"></i> 2.5 Tahun</span>
+                        <span class="intake"><i class="fas fa-calendar-plus"></i> Februari & September</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="program-filter">
+                <h3>Cari Program Mengikut Minat</h3>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Semua Program</button>
+                    <button class="filter-btn" data-filter="culinary">Kulinari</button>
+                    <button class="filter-btn" data-filter="management">Pengurusan</button>
+                    <button class="filter-btn" data-filter="technology">Teknologi</button>
+                    <button class="filter-btn" data-filter="hospitality">Hospitaliti</button>
+                    <button class="filter-btn" data-filter="technical">Teknikal</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule Section -->
+        <section id="schedule" class="section">
+            <h2>Jadual Harian</h2>
+            <div class="schedule-container">
+                <div class="schedule-form">
+                    <h3>Tambah Jadual Baru</h3>
+                    <form id="scheduleForm">
+                        <input type="text" id="eventTitle" placeholder="Tajuk acara (cth: Matematik Asas)" required>
+                        <select id="eventProgram" required title="Pilih Program">
+                            <option value="">Pilih Program</option>
+                            <option value="culinary">Diploma in Culinary</option>
+                            <option value="admin">Diploma in Administrative Management</option>
+                            <option value="computer">Diploma in Computer System</option>
+                            <option value="fnb">Diploma in Food & Beverage Management</option>
+                            <option value="electrical">Diploma in Electrical Wiring & Maintenance</option>
+                            <option value="general">Umum (Semua Program)</option>
+                        </select>
+                        <input type="time" id="eventTime" required title="Masa acara">
+                        <select id="eventDay" required title="Hari dalam minggu">
+                            <option value="">Pilih hari</option>
+                            <option value="monday">Isnin</option>
+                            <option value="tuesday">Selasa</option>
+                            <option value="wednesday">Rabu</option>
+                            <option value="thursday">Khamis</option>
+                            <option value="friday">Jumaat</option>
+                            <option value="saturday">Sabtu</option>
+                            <option value="sunday">Ahad</option>
+                        </select>
+                        <button type="submit">Tambah</button>
+                    </form>
+                </div>
+                <div class="schedule-display">
+                    <h3>Jadual Minggu Ini</h3>
+                    <div id="scheduleList"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GPA Calculator Section -->
+        <section id="calculator" class="section">
+            <h2>Kalkulator GPA</h2>
+            <div class="gpa-container">
+                <div class="gpa-form">
+                    <h3>Masukkan Markah Subjek</h3>
+                    <div id="subjectsList">
+                        <div class="subject-row">
+                            <input type="text" placeholder="Nama subjek" class="subject-name">
+                            <input type="number" placeholder="Kredit" min="1" max="6" class="subject-credit">
+                            <select class="subject-grade" title="Pilih gred yang diperolehi">
+                                <option value="">Pilih gred</option>
+                                <option value="4.00">A+ (4.00)</option>
+                                <option value="4.00">A (4.00)</option>
+                                <option value="3.67">A- (3.67)</option>
+                                <option value="3.33">B+ (3.33)</option>
+                                <option value="3.00">B (3.00)</option>
+                                <option value="2.67">B- (2.67)</option>
+                                <option value="2.33">C+ (2.33)</option>
+                                <option value="2.00">C (2.00)</option>
+                                <option value="1.67">C- (1.67)</option>
+                                <option value="1.33">D+ (1.33)</option>
+                                <option value="1.00">D (1.00)</option>
+                                <option value="0.00">F (0.00)</option>
+                            </select>
+                            <button type="button" class="remove-subject" onclick="removeSubject(this)">Buang</button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addSubject()">Tambah Subjek</button>
+                    <button type="button" onclick="calculateGPA()">Kira GPA</button>
+                </div>
+                <div class="gpa-result">
+                    <h3>Keputusan</h3>
+                    <div id="gpaResult">
+                        <p>Masukkan maklumat subjek untuk mengira GPA</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Canteen Menu Section -->
+        <section id="canteen" class="section">
+            <h2>Menu Kantin Hari Ini</h2>
+            <div class="menu-container">
+                <div class="menu-category">
+                    <h3>Menu Utama</h3>
+                    <div class="menu-items">
+                        <div class="menu-item">
+                            <span class="item-name">Nasi Lemak</span>
+                            <span class="item-price">RM 3.50</span>
+                        </div>
+                        <div class="menu-item">
+                            <span class="item-name">Mee Goreng</span>
+                            <span class="item-price">RM 4.00</span>
+                        </div>
+                        <div class="menu-item">
+                            <span class="item-name">Ayam Penyet</span>
+                            <span class="item-price">RM 6.50</span>
+                        </div>
+                        <div class="menu-item">
+                            <span class="item-name">Nasi Campur</span>
+                            <span class="item-price">RM 5.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-category">
+                    <h3>Minuman</h3>
+                    <div class="menu-items">
+                        <div class="menu-item">
+                            <span class="item-name">Teh Tarik</span>
+                            <span class="item-price">RM 1.50</span>
+                        </div>
+                        <div class="menu-item">
+                            <span class="item-name">Kopi O</span>
+                            <span class="item-price">RM 1.20</span>
+                        </div>
+                        <div class="menu-item">
+                            <span class="item-name">Air Sirap</span>
+                            <span class="item-price">RM 1.00</span>
+                        </div>
+                        <div class="menu-item">
+                            <span class="item-name">Jus Oren</span>
+                            <span class="item-price">RM 2.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacts Section -->
+        <section id="contacts" class="section">
+            <h2>Direktori Hubungan Penting</h2>
+            <div class="contacts-container">
+                <div class="contact-category">
+                    <h3>Pentadbiran</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-user-tie"></i>
+                        <div>
+                            <strong>Pengetua</strong>
+                            <p>Tel: 03-1234 5678</p>
+                            <p>Email: pengetua@breyerhub.edu.my</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clipboard-list"></i>
+                        <div>
+                            <strong>Pendaftar</strong>
+                            <p>Tel: 03-1234 5679</p>
+                            <p>Email: pendaftar@breyerhub.edu.my</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-category">
+                    <h3>Fakulti Program</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-utensils"></i>
+                        <div>
+                            <strong>Culinary Department</strong>
+                            <p>Tel: 03-1234 5680</p>
+                            <p>Email: culinary@breyerhub.edu.my</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-laptop-code"></i>
+                        <div>
+                            <strong>Computer System Department</strong>
+                            <p>Tel: 03-1234 5681</p>
+                            <p>Email: computer@breyerhub.edu.my</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-plug"></i>
+                        <div>
+                            <strong>Electrical Department</strong>
+                            <p>Tel: 03-1234 5682</p>
+                            <p>Email: electrical@breyerhub.edu.my</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-category">
+                    <h3>Khidmat Pelajar</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-medkit"></i>
+                        <div>
+                            <strong>Bilik Sakit</strong>
+                            <p>Tel: 03-1234 5683</p>
+                            <p>Kecemasan: 999</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <div>
+                            <strong>Keselamatan</strong>
+                            <p>Tel: 03-1234 5684</p>
+                            <p>Kecemasan: 03-1234 5555</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 BreyerHub - Dibina untuk AI Vibe Coding Challenge 2025</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
