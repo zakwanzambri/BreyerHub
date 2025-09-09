@@ -67,6 +67,21 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
         console.error('Failed to initialize Attendance Tracker:', error);
     }
+
+    // Initialize analytics and goals systems
+    try {
+        analyticsManager = new AnalyticsManager();
+        console.log('Analytics Manager initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize Analytics Manager:', error);
+    }
+    
+    try {
+        goalManager = new GoalManager();
+        console.log('Goal Manager initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize Goal Manager:', error);
+    }
     
     // Add sample schedule if none exists
     const existingSchedule = localStorage.getItem('schedule');
@@ -2415,3 +2430,688 @@ class AttendanceTracker {
 
 // Global attendance tracker instance
 let attendanceTracker;
+
+class AnalyticsManager {
+    constructor() {
+        this.initializeAnalytics();
+    }
+
+    initializeAnalytics() {
+        this.updateOverviewCards();
+        this.generateCharts();
+        this.generateInsights();
+        this.updateActivityTimeline();
+    }
+
+    updateOverviewCards() {
+        // Get data from all trackers
+        const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        const attendance = JSON.parse(localStorage.getItem('attendance') || '[]');
+        const studyData = JSON.parse(localStorage.getItem('studyTimer') || '{}');
+
+        // Calculate overall GPA
+        const totalGpa = grades.reduce((acc, grade) => {
+            const gpa = this.gradeToGPA(grade.grade);
+            return acc + gpa;
+        }, 0);
+        const overallGpa = grades.length > 0 ? (totalGpa / grades.length).toFixed(2) : 'N/A';
+
+        // Calculate assignment completion rate
+        const completedAssignments = assignments.filter(a => a.status === 'completed').length;
+        const completionRate = assignments.length > 0 ? 
+            Math.round((completedAssignments / assignments.length) * 100) : 0;
+
+        // Calculate attendance rate
+        const attendedClasses = attendance.filter(a => a.attended).length;
+        const attendanceRate = attendance.length > 0 ? 
+            Math.round((attendedClasses / attendance.length) * 100) : 0;
+
+        // Calculate total study hours
+        const totalMinutes = studyData.totalTime || 0;
+        const totalHours = Math.round(totalMinutes / 60);
+
+        // Update cards
+        const gpaCard = document.getElementById('overallGpaCard');
+        const completionCard = document.getElementById('completionRateCard');
+        const attendanceCard = document.getElementById('attendanceRateCard');
+        const studyCard = document.getElementById('studyHoursCard');
+
+        if (gpaCard) gpaCard.textContent = overallGpa;
+        if (completionCard) completionCard.textContent = `${completionRate}%`;
+        if (attendanceCard) attendanceCard.textContent = `${attendanceRate}%`;
+        if (studyCard) studyCard.textContent = `${totalHours}h`;
+    }
+
+    gradeToGPA(grade) {
+        const gradeMap = {
+            'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+            'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+            'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+            'D+': 1.3, 'D': 1.0, 'F': 0.0
+        };
+        return gradeMap[grade] || 0;
+    }
+
+    generateCharts() {
+        // Only create charts if Chart.js is available
+        if (typeof Chart !== 'undefined') {
+            this.createGPATrendChart();
+            this.createAssignmentStatusChart();
+            this.createSubjectPerformanceChart();
+            this.createStudyTimeChart();
+        } else {
+            // Show placeholder message
+            this.showChartPlaceholders();
+        }
+    }
+
+    showChartPlaceholders() {
+        const chartContainers = ['gpaTrendChart', 'assignmentStatusChart', 'subjectPerformanceChart', 'studyTimeChart'];
+        chartContainers.forEach(id => {
+            const canvas = document.getElementById(id);
+            if (canvas) {
+                canvas.style.display = 'none';
+                const placeholder = document.createElement('div');
+                placeholder.className = 'chart-placeholder';
+                placeholder.innerHTML = `
+                    <p>📊 Chart visualization ready</p>
+                    <small>Chart.js library will render interactive charts here</small>
+                `;
+                canvas.parentNode.appendChild(placeholder);
+            }
+        });
+    }
+
+    createGPATrendChart() {
+        const ctx = document.getElementById('gpaTrendChart');
+        if (!ctx) return;
+
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        const sortedGrades = grades.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        const labels = sortedGrades.map(g => new Date(g.date).toLocaleDateString());
+        const gpaData = sortedGrades.map(g => this.gradeToGPA(g.grade));
+
+        // Calculate cumulative GPA
+        const cumulativeGPA = [];
+        let total = 0;
+        gpaData.forEach((gpa, index) => {
+            total += gpa;
+            cumulativeGPA.push((total / (index + 1)).toFixed(2));
+        });
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cumulative GPA',
+                    data: cumulativeGPA,
+                    borderColor: '#3657b3',
+                    backgroundColor: 'rgba(54, 87, 179, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 4.0
+                    }
+                }
+            }
+        });
+    }
+
+    createAssignmentStatusChart() {
+        const ctx = document.getElementById('assignmentStatusChart');
+        if (!ctx) return;
+
+        const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+        const statusCounts = {
+            completed: assignments.filter(a => a.status === 'completed').length,
+            pending: assignments.filter(a => a.status === 'pending').length,
+            overdue: assignments.filter(a => {
+                if (a.status === 'completed') return false;
+                return new Date(a.dueDate) < new Date();
+            }).length
+        };
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'Pending', 'Overdue'],
+                datasets: [{
+                    data: [statusCounts.completed, statusCounts.pending, statusCounts.overdue],
+                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    createSubjectPerformanceChart() {
+        const ctx = document.getElementById('subjectPerformanceChart');
+        if (!ctx) return;
+
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        const subjectGrades = {};
+
+        grades.forEach(grade => {
+            if (!subjectGrades[grade.subject]) {
+                subjectGrades[grade.subject] = [];
+            }
+            subjectGrades[grade.subject].push(this.gradeToGPA(grade.grade));
+        });
+
+        const subjects = Object.keys(subjectGrades);
+        const avgGrades = subjects.map(subject => {
+            const grades = subjectGrades[subject];
+            return (grades.reduce((a, b) => a + b, 0) / grades.length).toFixed(2);
+        });
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: subjects,
+                datasets: [{
+                    label: 'Average GPA',
+                    data: avgGrades,
+                    backgroundColor: 'rgba(54, 87, 179, 0.8)',
+                    borderColor: '#3657b3',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 4.0
+                    }
+                }
+            }
+        });
+    }
+
+    createStudyTimeChart() {
+        const ctx = document.getElementById('studyTimeChart');
+        if (!ctx) return;
+
+        // Get study time data from last 7 days
+        const studyData = JSON.parse(localStorage.getItem('studyTimeHistory') || '[]');
+        const last7Days = [];
+        const today = new Date();
+
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toDateString();
+            
+            const dayData = studyData.find(d => d.date === dateStr);
+            last7Days.push({
+                date: date.toLocaleDateString('en-US', { weekday: 'short' }),
+                minutes: dayData ? dayData.minutes : 0
+            });
+        }
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: last7Days.map(d => d.date),
+                datasets: [{
+                    label: 'Study Time (minutes)',
+                    data: last7Days.map(d => d.minutes),
+                    backgroundColor: 'rgba(103, 58, 183, 0.8)',
+                    borderColor: '#673ab7',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    generateInsights() {
+        const insights = [];
+        const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        const attendance = JSON.parse(localStorage.getItem('attendance') || '[]');
+
+        // Assignment insights
+        const overdueAssignments = assignments.filter(a => {
+            return a.status !== 'completed' && new Date(a.dueDate) < new Date();
+        }).length;
+
+        if (overdueAssignments > 0) {
+            insights.push({
+                icon: '⚠️',
+                title: 'Overdue Assignments',
+                message: `You have ${overdueAssignments} overdue assignment(s). Complete them as soon as possible.`
+            });
+        }
+
+        // Grade insights
+        if (grades.length >= 3) {
+            const recentGrades = grades.slice(-3);
+            const avgRecent = recentGrades.reduce((acc, g) => acc + this.gradeToGPA(g.grade), 0) / 3;
+            
+            if (avgRecent >= 3.5) {
+                insights.push({
+                    icon: '🎉',
+                    title: 'Excellent Performance',
+                    message: 'Your recent grades show excellent performance! Keep up the great work.'
+                });
+            } else if (avgRecent < 2.5) {
+                insights.push({
+                    icon: '📈',
+                    title: 'Room for Improvement',
+                    message: 'Your recent grades suggest you might need to adjust your study strategy.'
+                });
+            }
+        }
+
+        // Attendance insights
+        const recentAttendance = attendance.slice(-10);
+        if (recentAttendance.length > 0) {
+            const attendanceRate = recentAttendance.filter(a => a.attended).length / recentAttendance.length;
+            
+            if (attendanceRate < 0.8) {
+                insights.push({
+                    icon: '🏫',
+                    title: 'Attendance Alert',
+                    message: 'Your attendance rate is below 80%. Regular attendance is crucial for academic success.'
+                });
+            }
+        }
+
+        // Study time insights
+        const studyData = JSON.parse(localStorage.getItem('studyTimer') || '{}');
+        const totalMinutes = studyData.totalTime || 0;
+        const avgDailyMinutes = totalMinutes / 30; // Assuming 30 days
+
+        if (avgDailyMinutes < 60) {
+            insights.push({
+                icon: '⏰',
+                title: 'Study Time Recommendation',
+                message: 'Consider increasing your daily study time. Aim for at least 1-2 hours per day.'
+            });
+        }
+
+        this.renderInsights(insights);
+    }
+
+    renderInsights(insights) {
+        const container = document.getElementById('insightsContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (insights.length === 0) {
+            container.innerHTML = `
+                <div class="insight-item">
+                    <div class="insight-icon">✅</div>
+                    <div class="insight-content">
+                        <h4>All Good!</h4>
+                        <p>No specific insights at the moment. Keep up the good work!</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        insights.forEach(insight => {
+            const insightElement = document.createElement('div');
+            insightElement.className = 'insight-item';
+            insightElement.innerHTML = `
+                <div class="insight-icon">${insight.icon}</div>
+                <div class="insight-content">
+                    <h4>${insight.title}</h4>
+                    <p>${insight.message}</p>
+                </div>
+            `;
+            container.appendChild(insightElement);
+        });
+    }
+
+    updateActivityTimeline() {
+        const timeline = [];
+        const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        const attendance = JSON.parse(localStorage.getItem('attendance') || '[]');
+
+        // Add recent assignments
+        assignments.slice(-5).forEach(assignment => {
+            timeline.push({
+                icon: '📝',
+                title: `Assignment: ${assignment.title}`,
+                description: `Subject: ${assignment.subject}`,
+                time: new Date(assignment.dateCreated || assignment.dueDate).toLocaleDateString(),
+                timestamp: new Date(assignment.dateCreated || assignment.dueDate)
+            });
+        });
+
+        // Add recent grades
+        grades.slice(-5).forEach(grade => {
+            timeline.push({
+                icon: '📊',
+                title: `Grade: ${grade.grade}`,
+                description: `${grade.subject} - ${grade.assignment}`,
+                time: new Date(grade.date).toLocaleDateString(),
+                timestamp: new Date(grade.date)
+            });
+        });
+
+        // Add recent attendance
+        attendance.slice(-5).forEach(att => {
+            timeline.push({
+                icon: att.attended ? '✅' : '❌',
+                title: `Class ${att.attended ? 'Attended' : 'Missed'}`,
+                description: att.subject,
+                time: new Date(att.date).toLocaleDateString(),
+                timestamp: new Date(att.date)
+            });
+        });
+
+        // Sort by timestamp (most recent first)
+        timeline.sort((a, b) => b.timestamp - a.timestamp);
+
+        this.renderTimeline(timeline.slice(0, 10));
+    }
+
+    renderTimeline(timeline) {
+        const container = document.getElementById('timelineContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        timeline.forEach(item => {
+            const timelineElement = document.createElement('div');
+            timelineElement.className = 'timeline-item';
+            timelineElement.innerHTML = `
+                <div class="timeline-icon">${item.icon}</div>
+                <div class="timeline-content">
+                    <h5>${item.title}</h5>
+                    <p>${item.description}</p>
+                </div>
+                <div class="timeline-time">${item.time}</div>
+            `;
+            container.appendChild(timelineElement);
+        });
+    }
+}
+
+class GoalManager {
+    constructor() {
+        this.goals = JSON.parse(localStorage.getItem('goals') || '[]');
+        this.achievements = JSON.parse(localStorage.getItem('achievements') || '[]');
+        this.initializeGoals();
+    }
+
+    initializeGoals() {
+        this.renderGoals();
+        this.renderAchievements();
+        this.setupGoalForm();
+    }
+
+    setupGoalForm() {
+        const form = document.getElementById('goalForm');
+        if (!form) return;
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.addGoal();
+        });
+    }
+
+    addGoal() {
+        const title = document.getElementById('goalTitle').value;
+        const category = document.getElementById('goalCategory').value;
+        const target = parseInt(document.getElementById('goalTarget').value);
+        const deadline = document.getElementById('goalDeadline').value;
+        const description = document.getElementById('goalDescription').value;
+
+        if (!title || !category || !target || !deadline) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        const goal = {
+            id: Date.now(),
+            title,
+            category,
+            target,
+            current: 0,
+            deadline,
+            description,
+            created: new Date().toISOString()
+        };
+
+        this.goals.push(goal);
+        this.saveGoals();
+        this.renderGoals();
+
+        // Clear form
+        document.getElementById('goalForm').reset();
+    }
+
+    updateGoalProgress(goalId, progress) {
+        const goal = this.goals.find(g => g.id === goalId);
+        if (goal) {
+            goal.current = Math.min(progress, goal.target);
+            this.saveGoals();
+            this.renderGoals();
+            this.checkAchievements(goal);
+        }
+    }
+
+    checkAchievements(goal) {
+        if (goal.current >= goal.target) {
+            const achievement = {
+                id: Date.now(),
+                title: `Goal Completed: ${goal.title}`,
+                description: `Successfully completed ${goal.category} goal`,
+                icon: '🏆',
+                earned: new Date().toISOString()
+            };
+
+            this.achievements.push(achievement);
+            this.saveAchievements();
+            this.renderAchievements();
+
+            // Show notification
+            this.showAchievementNotification(achievement);
+        }
+    }
+
+    showAchievementNotification(achievement) {
+        const notification = document.createElement('div');
+        notification.className = 'achievement-notification';
+        notification.innerHTML = `
+            <div class="achievement-content">
+                <span class="achievement-icon">${achievement.icon}</span>
+                <div>
+                    <h4>Achievement Unlocked!</h4>
+                    <p>${achievement.title}</p>
+                </div>
+            </div>
+        `;
+
+        // Add styles for notification
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #3657b3, #673ab7);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+
+    renderGoals() {
+        const container = document.getElementById('goalsContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (this.goals.length === 0) {
+            container.innerHTML = `
+                <p style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                    No goals set yet. Create your first goal to start tracking your progress!
+                </p>
+            `;
+            return;
+        }
+
+        this.goals.forEach(goal => {
+            const progress = Math.round((goal.current / goal.target) * 100);
+            const daysLeft = Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+            
+            let deadlineClass = '';
+            if (daysLeft < 0) deadlineClass = 'urgent';
+            else if (daysLeft <= 7) deadlineClass = 'soon';
+
+            const goalElement = document.createElement('div');
+            goalElement.className = 'goal-item';
+            goalElement.innerHTML = `
+                <div class="goal-header">
+                    <h4 class="goal-title">${goal.title}</h4>
+                    <span class="goal-category category-${goal.category}">${goal.category}</span>
+                </div>
+                <p style="color: var(--text-secondary); margin: 0 0 15px 0;">${goal.description}</p>
+                <div class="goal-progress">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span style="font-size: 14px; color: var(--text-color);">Progress: ${goal.current}/${goal.target}</span>
+                        <span style="font-size: 14px; color: var(--text-color);">${progress}%</span>
+                    </div>
+                    <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+                <div class="goal-meta">
+                    <span class="goal-deadline ${deadlineClass}">
+                        ${daysLeft >= 0 ? `${daysLeft} days left` : `${Math.abs(daysLeft)} days overdue`}
+                    </span>
+                    <button onclick="goalManager.deleteGoal(${goal.id})" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
+                        🗑️
+                    </button>
+                </div>
+            `;
+            container.appendChild(goalElement);
+        });
+    }
+
+    deleteGoal(goalId) {
+        if (confirm('Are you sure you want to delete this goal?')) {
+            this.goals = this.goals.filter(g => g.id !== goalId);
+            this.saveGoals();
+            this.renderGoals();
+        }
+    }
+
+    renderAchievements() {
+        const container = document.getElementById('badgesContainer');
+        if (!container) return;
+
+        // Define default badges
+        const defaultBadges = [
+            { id: 'first_assignment', title: 'First Assignment', description: 'Complete your first assignment', icon: '📝', condition: 'assignment_count >= 1' },
+            { id: 'grade_a', title: 'A Student', description: 'Receive your first A grade', icon: '🌟', condition: 'has_a_grade' },
+            { id: 'perfect_attendance', title: 'Perfect Attendance', description: 'Attend 10 classes in a row', icon: '🏫', condition: 'attendance_streak >= 10' },
+            { id: 'study_master', title: 'Study Master', description: 'Study for 100 hours total', icon: '📚', condition: 'study_hours >= 100' },
+            { id: 'goal_achiever', title: 'Goal Achiever', description: 'Complete your first goal', icon: '🎯', condition: 'completed_goals >= 1' },
+            { id: 'consistent_learner', title: 'Consistent Learner', description: 'Study for 7 days in a row', icon: '🔥', condition: 'study_streak >= 7' }
+        ];
+
+        container.innerHTML = '';
+
+        defaultBadges.forEach(badge => {
+            const isUnlocked = this.checkBadgeCondition(badge.condition);
+            const badgeElement = document.createElement('div');
+            badgeElement.className = `badge-item ${isUnlocked ? 'unlocked' : 'locked'}`;
+            badgeElement.innerHTML = `
+                <div class="badge-icon">${badge.icon}</div>
+                <div class="badge-info">
+                    <h4>${badge.title}</h4>
+                    <p>${badge.description}</p>
+                </div>
+            `;
+            container.appendChild(badgeElement);
+        });
+    }
+
+    checkBadgeCondition(condition) {
+        const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        const attendance = JSON.parse(localStorage.getItem('attendance') || '[]');
+        const studyData = JSON.parse(localStorage.getItem('studyTimer') || '{}');
+        const completedGoals = this.goals.filter(g => g.current >= g.target).length;
+
+        switch (condition) {
+            case 'assignment_count >= 1':
+                return assignments.length >= 1;
+            case 'has_a_grade':
+                return grades.some(g => g.grade.startsWith('A'));
+            case 'attendance_streak >= 10':
+                // Check for 10 consecutive attended classes
+                let streak = 0;
+                let maxStreak = 0;
+                attendance.forEach(a => {
+                    if (a.attended) {
+                        streak++;
+                        maxStreak = Math.max(maxStreak, streak);
+                    } else {
+                        streak = 0;
+                    }
+                });
+                return maxStreak >= 10;
+            case 'study_hours >= 100':
+                return (studyData.totalTime || 0) >= 6000; // 100 hours in minutes
+            case 'completed_goals >= 1':
+                return completedGoals >= 1;
+            case 'study_streak >= 7':
+                return (studyData.currentStreak || 0) >= 7;
+            default:
+                return false;
+        }
+    }
+
+    saveGoals() {
+        localStorage.setItem('goals', JSON.stringify(this.goals));
+    }
+
+    saveAchievements() {
+        localStorage.setItem('achievements', JSON.stringify(this.achievements));
+    }
+}
+
+// Global instances for analytics and goals
+let analyticsManager;
+let goalManager;
