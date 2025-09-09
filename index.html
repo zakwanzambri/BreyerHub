@@ -10,8 +10,15 @@
 <body>
     <header>
         <div class="container">
-            <h1><i class="fas fa-university"></i> BreyerHub</h1>
-            <p>Portal Komuniti Kolej - Memudahkan Kehidupan Harian Anda</p>
+            <div class="header-content">
+                <div class="header-text">
+                    <h1><i class="fas fa-university"></i> BreyerHub</h1>
+                    <p>Portal Komuniti Kolej - Memudahkan Kehidupan Harian Anda</p>
+                </div>
+                <button id="theme-toggle" class="theme-toggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -21,6 +28,7 @@
                 <li><a href="#home" class="nav-link active" data-section="home"><i class="fas fa-home"></i> Utama</a></li>
                 <li><a href="#programs" class="nav-link" data-section="programs"><i class="fas fa-graduation-cap"></i> Program</a></li>
                 <li><a href="#schedule" class="nav-link" data-section="schedule"><i class="fas fa-calendar"></i> Jadual</a></li>
+                <li><a href="#timer" class="nav-link" data-section="timer"><i class="fas fa-clock"></i> Study Timer</a></li>
                 <li><a href="#calculator" class="nav-link" data-section="calculator"><i class="fas fa-calculator"></i> Kalkulator GPA</a></li>
                 <li><a href="#canteen" class="nav-link" data-section="canteen"><i class="fas fa-utensils"></i> Menu Kantin</a></li>
                 <li><a href="#contacts" class="nav-link" data-section="contacts"><i class="fas fa-phone"></i> Hubungi</a></li>
@@ -139,6 +147,96 @@
                     <button class="filter-btn" data-filter="technology">Teknologi</button>
                     <button class="filter-btn" data-filter="hospitality">Hospitaliti</button>
                     <button class="filter-btn" data-filter="technical">Teknikal</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Study Timer Section -->
+        <section id="timer" class="section">
+            <h2>Study Timer (Pomodoro)</h2>
+            <div class="timer-container">
+                <div class="timer-main">
+                    <div class="timer-display">
+                        <div class="timer-circle">
+                            <svg class="timer-progress" width="300" height="300">
+                                <circle cx="150" cy="150" r="140" stroke="#e9ecef" stroke-width="8" fill="none"/>
+                                <circle id="progress-circle" cx="150" cy="150" r="140" stroke="#667eea" 
+                                        stroke-width="8" fill="none" stroke-linecap="round"
+                                        stroke-dasharray="879.6" stroke-dashoffset="879.6"/>
+                            </svg>
+                            <div class="timer-text">
+                                <div id="timer-minutes">25</div>
+                                <div class="timer-separator">:</div>
+                                <div id="timer-seconds">00</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timer-status">
+                        <h3 id="timer-mode">Sesi Belajar</h3>
+                        <p id="timer-description">Fokus pada tugasan anda selama 25 minit</p>
+                    </div>
+                    
+                    <div class="timer-controls">
+                        <button id="timer-start" class="timer-btn primary">
+                            <i class="fas fa-play"></i> Mula
+                        </button>
+                        <button id="timer-pause" class="timer-btn secondary hidden">
+                            <i class="fas fa-pause"></i> Jeda
+                        </button>
+                        <button id="timer-reset" class="timer-btn tertiary">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="timer-sidebar">
+                    <div class="timer-settings">
+                        <h3>Tetapan Timer</h3>
+                        <div class="setting-group">
+                            <label for="work-duration">Sesi Belajar (minit)</label>
+                            <input type="number" id="work-duration" value="25" min="1" max="60" title="Durasi sesi belajar dalam minit">
+                        </div>
+                        <div class="setting-group">
+                            <label for="short-break">Rehat Pendek (minit)</label>
+                            <input type="number" id="short-break" value="5" min="1" max="30" title="Durasi rehat pendek dalam minit">
+                        </div>
+                        <div class="setting-group">
+                            <label for="long-break">Rehat Panjang (minit)</label>
+                            <input type="number" id="long-break" value="15" min="5" max="60" title="Durasi rehat panjang dalam minit">
+                        </div>
+                        <div class="setting-group">
+                            <label for="sessions-before-long">Sesi sebelum rehat panjang</label>
+                            <input type="number" id="sessions-before-long" value="4" min="2" max="8" title="Bilangan sesi belajar sebelum rehat panjang">
+                        </div>
+                    </div>
+                    
+                    <div class="timer-stats">
+                        <h3>Statistik Hari Ini</h3>
+                        <div class="stat-item">
+                            <span class="stat-label">Sesi Selesai</span>
+                            <span class="stat-value" id="completed-sessions">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Masa Belajar</span>
+                            <span class="stat-value" id="total-study-time">0 minit</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Masa Rehat</span>
+                            <span class="stat-value" id="total-break-time">0 minit</span>
+                        </div>
+                    </div>
+                    
+                    <div class="timer-tips">
+                        <h3>Tips Pomodoro</h3>
+                        <ul>
+                            <li>Pilih satu tugasan untuk difokuskan</li>
+                            <li>Tutup semua gangguan (phone, social media)</li>
+                            <li>Jika terganggu, reset timer</li>
+                            <li>Gunakan rehat untuk bergerak atau minum air</li>
+                            <li>Catat pencapaian setiap sesi</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </section>

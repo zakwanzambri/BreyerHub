@@ -36,6 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Program filter functionality
     initializeProgramFilter();
+
+    // Study Timer functionality
+    initializeStudyTimer();
+
+    // Dark Mode functionality
+    initializeDarkMode();
 });
 
 // Schedule Management
@@ -364,6 +370,322 @@ function initializeProgramFilter() {
             });
         });
     });
+}
+
+// Study Timer Functionality
+let timerState = {
+    isRunning: false,
+    isPaused: false,
+    currentTime: 25 * 60, // 25 minutes in seconds
+    totalTime: 25 * 60,
+    currentSession: 'work', // 'work', 'shortBreak', 'longBreak'
+    sessionCount: 0,
+    interval: null
+};
+
+function initializeStudyTimer() {
+    const startBtn = document.getElementById('timer-start');
+    const pauseBtn = document.getElementById('timer-pause');
+    const resetBtn = document.getElementById('timer-reset');
+    
+    const workDurationInput = document.getElementById('work-duration');
+    const shortBreakInput = document.getElementById('short-break');
+    const longBreakInput = document.getElementById('long-break');
+    const sessionsBeforeLongInput = document.getElementById('sessions-before-long');
+    
+    if (!startBtn) return; // Timer section not loaded
+    
+    // Load saved stats
+    loadTimerStats();
+    
+    // Event listeners
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    resetBtn.addEventListener('click', resetTimer);
+    
+    // Settings change listeners
+    [workDurationInput, shortBreakInput, longBreakInput, sessionsBeforeLongInput].forEach(input => {
+        if (input) {
+            input.addEventListener('change', updateTimerSettings);
+        }
+    });
+    
+    // Initialize display
+    updateTimerDisplay();
+    updateProgressCircle();
+}
+
+function startTimer() {
+    if (timerState.isPaused) {
+        // Resume timer
+        timerState.isPaused = false;
+    } else {
+        // Start new timer
+        timerState.isRunning = true;
+    }
+    
+    timerState.interval = setInterval(() => {
+        timerState.currentTime--;
+        updateTimerDisplay();
+        updateProgressCircle();
+        
+        if (timerState.currentTime <= 0) {
+            completeSession();
+        }
+    }, 1000);
+    
+    // Update button states
+    document.getElementById('timer-start').classList.add('hidden');
+    document.getElementById('timer-pause').classList.remove('hidden');
+}
+
+function pauseTimer() {
+    timerState.isPaused = true;
+    clearInterval(timerState.interval);
+    
+    // Show start button, hide pause button
+    document.getElementById('timer-start').classList.remove('hidden');
+    document.getElementById('timer-pause').classList.add('hidden');
+}
+
+function resetTimer() {
+    clearInterval(timerState.interval);
+    timerState.isRunning = false;
+    timerState.isPaused = false;
+    
+    // Reset to current session default time
+    const workDuration = parseInt(document.getElementById('work-duration').value) || 25;
+    const shortBreak = parseInt(document.getElementById('short-break').value) || 5;
+    const longBreak = parseInt(document.getElementById('long-break').value) || 15;
+    
+    if (timerState.currentSession === 'work') {
+        timerState.currentTime = workDuration * 60;
+        timerState.totalTime = workDuration * 60;
+    } else if (timerState.currentSession === 'shortBreak') {
+        timerState.currentTime = shortBreak * 60;
+        timerState.totalTime = shortBreak * 60;
+    } else {
+        timerState.currentTime = longBreak * 60;
+        timerState.totalTime = longBreak * 60;
+    }
+    
+    // Reset button states
+    document.getElementById('timer-start').classList.remove('hidden');
+    document.getElementById('timer-pause').classList.add('hidden');
+    
+    updateTimerDisplay();
+    updateProgressCircle();
+}
+
+function completeSession() {
+    clearInterval(timerState.interval);
+    timerState.isRunning = false;
+    
+    // Play notification sound (if possible)
+    playNotificationSound();
+    
+    // Update stats
+    updateTimerStats();
+    
+    // Switch to next session
+    switchToNextSession();
+    
+    // Reset button states
+    document.getElementById('timer-start').classList.remove('hidden');
+    document.getElementById('timer-pause').classList.add('hidden');
+    
+    // Show completion notification
+    showNotification(getSessionCompletionMessage(), 'success');
+}
+
+function switchToNextSession() {
+    const sessionsBeforeLong = parseInt(document.getElementById('sessions-before-long').value) || 4;
+    
+    if (timerState.currentSession === 'work') {
+        timerState.sessionCount++;
+        
+        if (timerState.sessionCount % sessionsBeforeLong === 0) {
+            startLongBreak();
+        } else {
+            startShortBreak();
+        }
+    } else {
+        startWorkSession();
+    }
+}
+
+function startWorkSession() {
+    const workDuration = parseInt(document.getElementById('work-duration').value) || 25;
+    timerState.currentSession = 'work';
+    timerState.currentTime = workDuration * 60;
+    timerState.totalTime = workDuration * 60;
+    
+    document.getElementById('timer-mode').textContent = 'Sesi Belajar';
+    document.getElementById('timer-description').textContent = `Fokus pada tugasan anda selama ${workDuration} minit`;
+    document.getElementById('progress-circle').style.stroke = '#667eea';
+    
+    updateTimerDisplay();
+    updateProgressCircle();
+}
+
+function startShortBreak() {
+    const shortBreak = parseInt(document.getElementById('short-break').value) || 5;
+    timerState.currentSession = 'shortBreak';
+    timerState.currentTime = shortBreak * 60;
+    timerState.totalTime = shortBreak * 60;
+    
+    document.getElementById('timer-mode').textContent = 'Rehat Pendek';
+    document.getElementById('timer-description').textContent = `Berehat sebentar selama ${shortBreak} minit`;
+    document.getElementById('progress-circle').style.stroke = '#28a745';
+    
+    updateTimerDisplay();
+    updateProgressCircle();
+}
+
+function startLongBreak() {
+    const longBreak = parseInt(document.getElementById('long-break').value) || 15;
+    timerState.currentSession = 'longBreak';
+    timerState.currentTime = longBreak * 60;
+    timerState.totalTime = longBreak * 60;
+    
+    document.getElementById('timer-mode').textContent = 'Rehat Panjang';
+    document.getElementById('timer-description').textContent = `Rehat panjang selama ${longBreak} minit - Anda pantas mendapatnya!`;
+    document.getElementById('progress-circle').style.stroke = '#17a2b8';
+    
+    updateTimerDisplay();
+    updateProgressCircle();
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timerState.currentTime / 60);
+    const seconds = timerState.currentTime % 60;
+    
+    document.getElementById('timer-minutes').textContent = minutes.toString().padStart(2, '0');
+    document.getElementById('timer-seconds').textContent = seconds.toString().padStart(2, '0');
+}
+
+function updateProgressCircle() {
+    const progressCircle = document.getElementById('progress-circle');
+    if (!progressCircle) return;
+    
+    const circumference = 2 * Math.PI * 140; // radius = 140
+    const progress = (timerState.totalTime - timerState.currentTime) / timerState.totalTime;
+    const offset = circumference - (progress * circumference);
+    
+    progressCircle.style.strokeDashoffset = offset;
+}
+
+function updateTimerSettings() {
+    if (!timerState.isRunning) {
+        resetTimer();
+    }
+}
+
+function updateTimerStats() {
+    const today = new Date().toDateString();
+    let stats = JSON.parse(localStorage.getItem('timerStats')) || {};
+    
+    if (!stats[today]) {
+        stats[today] = {
+            completedSessions: 0,
+            totalStudyTime: 0,
+            totalBreakTime: 0
+        };
+    }
+    
+    stats[today].completedSessions++;
+    
+    if (timerState.currentSession === 'work') {
+        const workDuration = parseInt(document.getElementById('work-duration').value) || 25;
+        stats[today].totalStudyTime += workDuration;
+    } else {
+        const breakDuration = timerState.currentSession === 'shortBreak' 
+            ? parseInt(document.getElementById('short-break').value) || 5
+            : parseInt(document.getElementById('long-break').value) || 15;
+        stats[today].totalBreakTime += breakDuration;
+    }
+    
+    localStorage.setItem('timerStats', JSON.stringify(stats));
+    loadTimerStats();
+}
+
+function loadTimerStats() {
+    const today = new Date().toDateString();
+    const stats = JSON.parse(localStorage.getItem('timerStats')) || {};
+    const todayStats = stats[today] || { completedSessions: 0, totalStudyTime: 0, totalBreakTime: 0 };
+    
+    const completedElement = document.getElementById('completed-sessions');
+    const studyTimeElement = document.getElementById('total-study-time');
+    const breakTimeElement = document.getElementById('total-break-time');
+    
+    if (completedElement) completedElement.textContent = todayStats.completedSessions;
+    if (studyTimeElement) studyTimeElement.textContent = `${todayStats.totalStudyTime} minit`;
+    if (breakTimeElement) breakTimeElement.textContent = `${todayStats.totalBreakTime} minit`;
+}
+
+function getSessionCompletionMessage() {
+    if (timerState.currentSession === 'work') {
+        return 'Sesi belajar selesai! Masa untuk berehat.';
+    } else if (timerState.currentSession === 'shortBreak') {
+        return 'Rehat pendek selesai! Kembali belajar.';
+    } else {
+        return 'Rehat panjang selesai! Siap untuk sesi belajar baru.';
+    }
+}
+
+function playNotificationSound() {
+    // Create a simple beep sound using Web Audio API
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (error) {
+        console.log('Audio not supported');
+    }
+}
+
+// Dark Mode Functionality
+function initializeDarkMode() {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (!themeToggle) return;
+    
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    
+    // Theme toggle event listener
+    themeToggle.addEventListener('click', toggleTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const themeToggle = document.getElementById('theme-toggle');
+    const icon = themeToggle.querySelector('i');
+    
+    if (theme === 'dark') {
+        icon.className = 'fas fa-sun';
+        themeToggle.title = 'Switch to Light Mode';
+    } else {
+        icon.className = 'fas fa-moon';
+        themeToggle.title = 'Switch to Dark Mode';
+    }
 }
 
 // Add some sample data for demonstration (can be removed in production)
