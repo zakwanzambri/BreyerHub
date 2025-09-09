@@ -6,6 +6,17 @@
     <title>BreyerHub - Portal Komuniti Kolej</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="BreyerHub">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
+    <link rel="icon" type="image/svg+xml" href="icons/icon-192x192.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.svg">
 </head>
 <body>
     <header>
@@ -18,6 +29,10 @@
                 <button id="theme-toggle" class="theme-toggle" title="Toggle Dark Mode">
                     <i class="fas fa-moon"></i>
                 </button>
+                <button id="install-app" class="install-btn hidden" title="Install App">
+                    <i class="fas fa-download"></i>
+                    <span>Install App</span>
+                </button>
             </div>
         </div>
     </header>
@@ -28,6 +43,11 @@
                 <li><a href="#home" class="nav-link active" data-section="home"><i class="fas fa-home"></i> Utama</a></li>
                 <li><a href="#programs" class="nav-link" data-section="programs"><i class="fas fa-graduation-cap"></i> Program</a></li>
                 <li><a href="#schedule" class="nav-link" data-section="schedule"><i class="fas fa-calendar"></i> Jadual</a></li>
+                <li><a href="#assignments" class="nav-link" data-section="assignments"><i class="fas fa-tasks"></i> Tugasan</a></li>
+                <li><a href="#grades" class="nav-link" data-section="grades"><i class="fas fa-chart-bar"></i> Gred</a></li>
+                <li><a href="#attendance" class="nav-link" data-section="attendance"><i class="fas fa-user-check"></i> Kehadiran</a></li>
+                <li><a href="#analytics" class="nav-link" data-section="analytics"><i class="fas fa-chart-line"></i> Analitik</a></li>
+                <li><a href="#goals" class="nav-link" data-section="goals"><i class="fas fa-bullseye"></i> Matlamat</a></li>
                 <li><a href="#timer" class="nav-link" data-section="timer"><i class="fas fa-clock"></i> Study Timer</a></li>
                 <li><a href="#calculator" class="nav-link" data-section="calculator"><i class="fas fa-calculator"></i> Kalkulator GPA</a></li>
                 <li><a href="#canteen" class="nav-link" data-section="canteen"><i class="fas fa-utensils"></i> Menu Kantin</a></li>
@@ -55,6 +75,26 @@
                         <p>Urus jadual kelas mengikut program diploma anda</p>
                     </div>
                     <div class="feature-card">
+                        <i class="fas fa-tasks"></i>
+                        <h3>Penjejak Tugasan</h3>
+                        <p>Pantau tugasan mengikut program dan tarikh akhir</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Penjejak Gred</h3>
+                        <p>Jejaki gred individu dan analisis prestasi</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-user-check"></i>
+                        <h3>Penjejak Kehadiran</h3>
+                        <p>Monitor kehadiran kelas dan statistik</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Study Timer Pomodoro</h3>
+                        <p>Teknik Pomodoro untuk produktiviti maksimum</p>
+                    </div>
+                    <div class="feature-card">
                         <i class="fas fa-chart-line"></i>
                         <h3>Kalkulator GPA</h3>
                         <p>Kira GPA anda secara automatik dan tepat</p>
@@ -68,6 +108,32 @@
                         <i class="fas fa-address-book"></i>
                         <h3>Direktori Hubungan</h3>
                         <p>Maklumat hubungan penting kolej dan fakulti</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>Install sebagai App</h3>
+                        <p>Pasang BreyerHub di telefon anda untuk akses pantas</p>
+                    </div>
+                </div>
+                
+                <!-- PWA Installation Banner -->
+                <div id="pwa-banner" class="pwa-banner hidden">
+                    <div class="pwa-banner-content">
+                        <div class="pwa-banner-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="pwa-banner-text">
+                            <h3>Pasang BreyerHub sebagai App</h3>
+                            <p>Akses pantas, offline support, dan notifikasi push</p>
+                        </div>
+                        <div class="pwa-banner-actions">
+                            <button id="pwa-install-btn" class="pwa-install-btn">
+                                <i class="fas fa-download"></i> Pasang
+                            </button>
+                            <button id="pwa-dismiss-btn" class="pwa-dismiss-btn" title="Dismiss installation prompt">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,6 +213,198 @@
                     <button class="filter-btn" data-filter="technology">Teknologi</button>
                     <button class="filter-btn" data-filter="hospitality">Hospitaliti</button>
                     <button class="filter-btn" data-filter="technical">Teknikal</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Dashboard Section -->
+        <section id="analytics" class="main-section">
+            <div class="container">
+                <h2><i class="fas fa-chart-line"></i> Dashboard Analitik</h2>
+                
+                <!-- Quick Overview Cards -->
+                <div class="analytics-overview">
+                    <div class="overview-card">
+                        <div class="card-icon"><i class="fas fa-tasks"></i></div>
+                        <div class="card-content">
+                            <h3 id="totalTasksAnalytics">0</h3>
+                            <p>Jumlah Tugasan</p>
+                            <span class="trend" id="tasksTrend">+0 minggu ini</span>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <div class="card-content">
+                            <h3 id="currentGPAAnalytics">0.00</h3>
+                            <p>GPA Semasa</p>
+                            <span class="trend" id="gpaTrend">+0.00 dari sebelum</span>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon"><i class="fas fa-percentage"></i></div>
+                        <div class="card-content">
+                            <h3 id="attendanceRateAnalytics">0%</h3>
+                            <p>Kadar Kehadiran</p>
+                            <span class="trend" id="attendanceTrend">+0% bulan ini</span>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-icon"><i class="fas fa-clock"></i></div>
+                        <div class="card-content">
+                            <h3 id="studyTimeAnalytics">0h</h3>
+                            <p>Masa Belajar</p>
+                            <span class="trend" id="studyTimeTrend">+0h minggu ini</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Charts -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Prestasi GPA (6 Bulan Terakhir)</h3>
+                        <div class="chart-placeholder" id="gpaChart">
+                            <canvas id="gpaChartCanvas" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Trend Tugasan (Bulanan)</h3>
+                        <div class="chart-placeholder" id="assignmentChart">
+                            <canvas id="assignmentChartCanvas" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subject Performance Breakdown -->
+                <div class="analytics-card">
+                    <h3>Prestasi Mengikut Subjek</h3>
+                    <div id="subjectAnalytics" class="subject-analytics">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-pie"></i>
+                            <h4>Tiada Data Subjek</h4>
+                            <p>Tambah gred untuk melihat analisis prestasi subjek</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Insights -->
+                <div class="analytics-card">
+                    <h3>Insight Pintar</h3>
+                    <div id="smartInsights" class="insights-container">
+                        <div class="insight-item">
+                            <div class="insight-icon"><i class="fas fa-lightbulb"></i></div>
+                            <div class="insight-content">
+                                <h4>Selamat Datang!</h4>
+                                <p>Mula tambah tugasan, gred, dan kehadiran untuk mendapat insight yang berguna.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Timeline -->
+                <div class="analytics-card">
+                    <h3>Aktiviti Terkini</h3>
+                    <div id="activityTimeline" class="timeline-container">
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <h4>Tiada Aktiviti</h4>
+                            <p>Aktiviti anda akan dipaparkan di sini</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Goals & Targets Section -->
+        <section id="goals" class="main-section">
+            <div class="container">
+                <h2><i class="fas fa-bullseye"></i> Matlamat & Target</h2>
+                
+                <!-- Add Goal Form -->
+                <div class="tracker-card">
+                    <h3>Tetapkan Matlamat Baru</h3>
+                    <form id="goalForm" class="goal-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="goalTitle">Tajuk Matlamat</label>
+                                <input type="text" id="goalTitle" required placeholder="Contoh: Capai GPA 3.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="goalCategory">Kategori</label>
+                                <select id="goalCategory" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="academic">Akademik</option>
+                                    <option value="assignment">Tugasan</option>
+                                    <option value="attendance">Kehadiran</option>
+                                    <option value="study">Masa Belajar</option>
+                                    <option value="personal">Peribadi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="goalTarget">Nilai Target</label>
+                                <input type="number" id="goalTarget" required step="0.01" placeholder="Contoh: 3.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="goalDeadline">Tarikh Sasaran</label>
+                                <input type="date" id="goalDeadline" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="goalDescription">Penerangan</label>
+                            <textarea id="goalDescription" rows="3" placeholder="Penerangan matlamat dan strategi untuk mencapainya"></textarea>
+                        </div>
+                        <button type="submit" class="btn primary">
+                            <i class="fas fa-plus"></i> Tambah Matlamat
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Goals Progress -->
+                <div class="goals-progress">
+                    <h3>Progress Matlamat Aktif</h3>
+                    <div id="activeGoals" class="goals-container">
+                        <div class="empty-state">
+                            <i class="fas fa-bullseye"></i>
+                            <h4>Tiada Matlamat Aktif</h4>
+                            <p>Tetapkan matlamat pertama anda untuk mula penjejakan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievement Badges -->
+                <div class="achievements-section">
+                    <h3>Pencapaian & Lencana</h3>
+                    <div id="achievementBadges" class="badges-container">
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><i class="fas fa-star"></i></div>
+                            <div class="badge-info">
+                                <h4>Pemula</h4>
+                                <p>Tambah tugasan pertama</p>
+                            </div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><i class="fas fa-trophy"></i></div>
+                            <div class="badge-info">
+                                <h4>Pelajar Cemerlang</h4>
+                                <p>Capai GPA 3.5 atau lebih</p>
+                            </div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><i class="fas fa-calendar-check"></i></div>
+                            <div class="badge-info">
+                                <h4>Kehadiran Sempurna</h4>
+                                <p>100% kehadiran selama sebulan</p>
+                            </div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><i class="fas fa-fire"></i></div>
+                            <div class="badge-info">
+                                <h4>Streak 7 Hari</h4>
+                                <p>Guna app selama 7 hari berturut</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -436,6 +694,566 @@
                             <strong>Keselamatan</strong>
                             <p>Tel: 03-1234 5684</p>
                             <p>Kecemasan: 03-1234 5555</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assignment Tracker Section -->
+        <section id="assignments" class="main-section">
+            <div class="container">
+                <h2><i class="fas fa-tasks"></i> Penjejak Tugasan</h2>
+                
+                <!-- Add Assignment Form -->
+                <div class="tracker-card">
+                    <h3>Tambah Tugasan Baru</h3>
+                    <form id="assignmentForm" class="assignment-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="assignmentTitle">Tajuk Tugasan</label>
+                                <input type="text" id="assignmentTitle" required placeholder="Nama tugasan atau projek">
+                            </div>
+                            <div class="form-group">
+                                <label for="assignmentProgram">Program</label>
+                                <select id="assignmentProgram" required>
+                                    <option value="">Pilih Program</option>
+                                    <option value="dsd">Diploma Seni Digital</option>
+                                    <option value="dkv">Diploma Komunikasi Visual</option>
+                                    <option value="dgd">Diploma Grafik Digital</option>
+                                    <option value="dwm">Diploma Multimedia Digital</option>
+                                    <option value="dit">Diploma Teknologi IT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="assignmentSubject">Subjek</label>
+                                <input type="text" id="assignmentSubject" required placeholder="Nama subjek">
+                            </div>
+                            <div class="form-group">
+                                <label for="assignmentDueDate">Tarikh Akhir</label>
+                                <input type="datetime-local" id="assignmentDueDate" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="assignmentPriority">Keutamaan</label>
+                                <select id="assignmentPriority" required>
+                                    <option value="low">Rendah</option>
+                                    <option value="medium" selected>Sederhana</option>
+                                    <option value="high">Tinggi</option>
+                                    <option value="urgent">Kecemasan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="assignmentProgress">Kemajuan (%)</label>
+                                <input type="range" id="assignmentProgress" min="0" max="100" value="0" class="progress-slider">
+                                <span id="progressValue">0%</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignmentDescription">Penerangan</label>
+                            <textarea id="assignmentDescription" rows="3" placeholder="Penerangan tugasan (pilihan)"></textarea>
+                        </div>
+                        <button type="submit" class="btn primary">
+                            <i class="fas fa-plus"></i> Tambah Tugasan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Assignment Filters -->
+                <div class="tracker-card">
+                    <h3>Tapis & Cari</h3>
+                    <div class="filter-controls">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="filterProgram">Tapis Program</label>
+                                <select id="filterProgram">
+                                    <option value="">Semua Program</option>
+                                    <option value="dsd">Diploma Seni Digital</option>
+                                    <option value="dkv">Diploma Komunikasi Visual</option>
+                                    <option value="dgd">Diploma Grafik Digital</option>
+                                    <option value="dwm">Diploma Multimedia Digital</option>
+                                    <option value="dit">Diploma Teknologi IT</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterStatus">Tapis Status</label>
+                                <select id="filterStatus">
+                                    <option value="">Semua Status</option>
+                                    <option value="not-started">Belum Mula</option>
+                                    <option value="in-progress">Dalam Progress</option>
+                                    <option value="completed">Selesai</option>
+                                    <option value="overdue">Lewat</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterPriority">Tapis Keutamaan</label>
+                                <select id="filterPriority">
+                                    <option value="">Semua Keutamaan</option>
+                                    <option value="urgent">Kecemasan</option>
+                                    <option value="high">Tinggi</option>
+                                    <option value="medium">Sederhana</option>
+                                    <option value="low">Rendah</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="searchAssignments">Cari Tugasan</label>
+                            <input type="text" id="searchAssignments" placeholder="Cari mengikut tajuk atau subjek...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment Statistics -->
+                <div class="tracker-card">
+                    <h3>Statistik Tugasan</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalAssignments">0</div>
+                            <div class="stat-label">Jumlah Tugasan</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="completedAssignments">0</div>
+                            <div class="stat-label">Selesai</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="inProgressAssignments">0</div>
+                            <div class="stat-label">Dalam Progress</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="overdueAssignments">0</div>
+                            <div class="stat-label">Lewat</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="dueSoonAssignments">0</div>
+                            <div class="stat-label">Due Minggu Ini</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="completionRate">0%</div>
+                            <div class="stat-label">Kadar Siap</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment List -->
+                <div class="tracker-card">
+                    <h3>Senarai Tugasan</h3>
+                    <div class="assignment-controls">
+                        <div class="sort-controls">
+                            <label for="sortBy">Susun mengikut:</label>
+                            <select id="sortBy" title="Pilih kriteria penyusunan">
+                                <option value="dueDate">Tarikh Akhir</option>
+                                <option value="priority">Keutamaan</option>
+                                <option value="progress">Kemajuan</option>
+                                <option value="title">Tajuk</option>
+                                <option value="created">Tarikh Dicipta</option>
+                            </select>
+                            <label for="sortOrder">Arah:</label>
+                            <select id="sortOrder" title="Pilih arah penyusunan">
+                                <option value="asc">Menaik</option>
+                                <option value="desc">Menurun</option>
+                            </select>
+                        </div>
+                        <div class="view-controls">
+                            <button id="listView" class="btn secondary active">
+                                <i class="fas fa-list"></i> Senarai
+                            </button>
+                            <button id="cardView" class="btn secondary">
+                                <i class="fas fa-th"></i> Kad
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="assignmentsList" class="assignments-container">
+                        <div class="empty-state">
+                            <i class="fas fa-tasks"></i>
+                            <h4>Tiada Tugasan</h4>
+                            <p>Tambah tugasan pertama anda untuk mula penjejakan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grade Tracker Section -->
+        <section id="grades" class="main-section">
+            <div class="container">
+                <h2><i class="fas fa-chart-bar"></i> Penjejak Gred</h2>
+                
+                <!-- Add Grade Form -->
+                <div class="tracker-card">
+                    <h3>Tambah Gred Baru</h3>
+                    <form id="gradeForm" class="grade-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gradeSubject">Subjek</label>
+                                <input type="text" id="gradeSubject" required placeholder="Nama subjek">
+                            </div>
+                            <div class="form-group">
+                                <label for="gradeProgram">Program</label>
+                                <select id="gradeProgram" required>
+                                    <option value="">Pilih Program</option>
+                                    <option value="dsd">Diploma Seni Digital</option>
+                                    <option value="dkv">Diploma Komunikasi Visual</option>
+                                    <option value="dgd">Diploma Grafik Digital</option>
+                                    <option value="dwm">Diploma Multimedia Digital</option>
+                                    <option value="dit">Diploma Teknologi IT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gradeAssignment">Nama Tugasan/Ujian</label>
+                                <input type="text" id="gradeAssignment" required placeholder="Contoh: Quiz 1, Assignment 2, Final Exam">
+                            </div>
+                            <div class="form-group">
+                                <label for="gradeType">Jenis Penilaian</label>
+                                <select id="gradeType" required>
+                                    <option value="">Pilih Jenis</option>
+                                    <option value="assignment">Tugasan</option>
+                                    <option value="quiz">Kuiz</option>
+                                    <option value="test">Ujian</option>
+                                    <option value="project">Projek</option>
+                                    <option value="presentation">Pembentangan</option>
+                                    <option value="lab">Kerja Makmal</option>
+                                    <option value="midterm">Peperiksaan Tengah Semester</option>
+                                    <option value="final">Peperiksaan Akhir</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gradeScore">Markah Diperolehi</label>
+                                <input type="number" id="gradeScore" required min="0" max="100" step="0.1" placeholder="0-100">
+                            </div>
+                            <div class="form-group">
+                                <label for="gradeMaxScore">Markah Penuh</label>
+                                <input type="number" id="gradeMaxScore" required min="1" max="100" value="100" step="0.1">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gradeWeight">Pemberat (%)</label>
+                                <input type="number" id="gradeWeight" required min="1" max="100" value="10" step="1" placeholder="10">
+                            </div>
+                            <div class="form-group">
+                                <label for="gradeDate">Tarikh</label>
+                                <input type="date" id="gradeDate" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="gradeNotes">Nota (Pilihan)</label>
+                            <textarea id="gradeNotes" rows="2" placeholder="Nota atau komen tambahan"></textarea>
+                        </div>
+                        <button type="submit" class="btn primary">
+                            <i class="fas fa-plus"></i> Tambah Gred
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Grade Statistics -->
+                <div class="tracker-card">
+                    <h3>Statistik Akademik</h3>
+                    <div class="grade-stats-grid">
+                        <div class="grade-stat-card">
+                            <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="overallGPA">0.00</div>
+                                <div class="stat-label">GPA Keseluruhan</div>
+                            </div>
+                        </div>
+                        <div class="grade-stat-card">
+                            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="averageScore">0%</div>
+                                <div class="stat-label">Purata Markah</div>
+                            </div>
+                        </div>
+                        <div class="grade-stat-card">
+                            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="highestScore">0%</div>
+                                <div class="stat-label">Markah Tertinggi</div>
+                            </div>
+                        </div>
+                        <div class="grade-stat-card">
+                            <div class="stat-icon"><i class="fas fa-target"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="totalAssessments">0</div>
+                                <div class="stat-label">Jumlah Penilaian</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grade Filters -->
+                <div class="tracker-card">
+                    <h3>Tapis & Cari Gred</h3>
+                    <div class="filter-controls">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="filterGradeProgram">Tapis Program</label>
+                                <select id="filterGradeProgram">
+                                    <option value="">Semua Program</option>
+                                    <option value="dsd">Diploma Seni Digital</option>
+                                    <option value="dkv">Diploma Komunikasi Visual</option>
+                                    <option value="dgd">Diploma Grafik Digital</option>
+                                    <option value="dwm">Diploma Multimedia Digital</option>
+                                    <option value="dit">Diploma Teknologi IT</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterGradeSubject">Tapis Subjek</label>
+                                <select id="filterGradeSubject">
+                                    <option value="">Semua Subjek</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="filterGradeType">Tapis Jenis</label>
+                                <select id="filterGradeType">
+                                    <option value="">Semua Jenis</option>
+                                    <option value="assignment">Tugasan</option>
+                                    <option value="quiz">Kuiz</option>
+                                    <option value="test">Ujian</option>
+                                    <option value="project">Projek</option>
+                                    <option value="presentation">Pembentangan</option>
+                                    <option value="lab">Kerja Makmal</option>
+                                    <option value="midterm">Peperiksaan Tengah Semester</option>
+                                    <option value="final">Peperiksaan Akhir</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="searchGrades">Cari Gred</label>
+                            <input type="text" id="searchGrades" placeholder="Cari mengikut subjek, tugasan, atau nota...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subject Performance Overview -->
+                <div class="tracker-card">
+                    <h3>Prestasi Mengikut Subjek</h3>
+                    <div id="subjectPerformance" class="subject-performance">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-bar"></i>
+                            <h4>Tiada Data Prestasi</h4>
+                            <p>Tambah gred untuk melihat prestasi subjek</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grade List -->
+                <div class="tracker-card">
+                    <h3>Senarai Gred</h3>
+                    <div class="grade-controls">
+                        <div class="sort-controls">
+                            <label for="sortGradeBy">Susun mengikut:</label>
+                            <select id="sortGradeBy" title="Pilih kriteria penyusunan">
+                                <option value="date">Tarikh</option>
+                                <option value="score">Markah</option>
+                                <option value="subject">Subjek</option>
+                                <option value="type">Jenis</option>
+                                <option value="weight">Pemberat</option>
+                            </select>
+                            <label for="sortGradeOrder">Arah:</label>
+                            <select id="sortGradeOrder" title="Pilih arah penyusunan">
+                                <option value="desc">Menurun</option>
+                                <option value="asc">Menaik</option>
+                            </select>
+                        </div>
+                        <div class="view-controls">
+                            <button id="gradeListView" class="btn secondary active">
+                                <i class="fas fa-list"></i> Senarai
+                            </button>
+                            <button id="gradeSubjectView" class="btn secondary">
+                                <i class="fas fa-layer-group"></i> Subjek
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="gradesList" class="grades-container">
+                        <div class="empty-state">
+                            <i class="fas fa-chart-bar"></i>
+                            <h4>Tiada Gred</h4>
+                            <p>Tambah gred pertama anda untuk mula penjejakan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Attendance Tracker Section -->
+        <section id="attendance" class="main-section">
+            <div class="container">
+                <h2><i class="fas fa-user-check"></i> Penjejak Kehadiran</h2>
+                
+                <!-- Quick Attendance Mark -->
+                <div class="tracker-card">
+                    <h3>Rekod Kehadiran Hari Ini</h3>
+                    <div class="today-attendance">
+                        <div class="attendance-date">
+                            <i class="fas fa-calendar-day"></i>
+                            <span id="todayDate"></span>
+                        </div>
+                        <div class="quick-attendance-grid" id="quickAttendanceGrid">
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-plus"></i>
+                                <h4>Tiada Kelas Hari Ini</h4>
+                                <p>Tambah jadual kelas untuk rekod kehadiran</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Class Schedule -->
+                <div class="tracker-card">
+                    <h3>Tambah Jadual Kelas</h3>
+                    <form id="classScheduleForm" class="schedule-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="className">Nama Kelas</label>
+                                <input type="text" id="className" required placeholder="Nama subjek/kelas">
+                            </div>
+                            <div class="form-group">
+                                <label for="classProgram">Program</label>
+                                <select id="classProgram" required>
+                                    <option value="">Pilih Program</option>
+                                    <option value="dsd">Diploma Seni Digital</option>
+                                    <option value="dkv">Diploma Komunikasi Visual</option>
+                                    <option value="dgd">Diploma Grafik Digital</option>
+                                    <option value="dwm">Diploma Multimedia Digital</option>
+                                    <option value="dit">Diploma Teknologi IT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="classDay">Hari</label>
+                                <select id="classDay" required>
+                                    <option value="">Pilih Hari</option>
+                                    <option value="monday">Isnin</option>
+                                    <option value="tuesday">Selasa</option>
+                                    <option value="wednesday">Rabu</option>
+                                    <option value="thursday">Khamis</option>
+                                    <option value="friday">Jumaat</option>
+                                    <option value="saturday">Sabtu</option>
+                                    <option value="sunday">Ahad</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="classTime">Masa Mula</label>
+                                <input type="time" id="classTime" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="classDuration">Tempoh (Minit)</label>
+                                <select id="classDuration" required>
+                                    <option value="60">1 Jam</option>
+                                    <option value="90">1.5 Jam</option>
+                                    <option value="120">2 Jam</option>
+                                    <option value="150">2.5 Jam</option>
+                                    <option value="180">3 Jam</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="classLocation">Lokasi</label>
+                                <input type="text" id="classLocation" placeholder="Bilik/Makmal (pilihan)">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn primary">
+                            <i class="fas fa-plus"></i> Tambah Jadual
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Attendance Statistics -->
+                <div class="tracker-card">
+                    <h3>Statistik Kehadiran</h3>
+                    <div class="attendance-stats-grid">
+                        <div class="attendance-stat-card">
+                            <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="attendanceRate">0%</div>
+                                <div class="stat-label">Kadar Kehadiran</div>
+                            </div>
+                        </div>
+                        <div class="attendance-stat-card">
+                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="totalPresent">0</div>
+                                <div class="stat-label">Jumlah Hadir</div>
+                            </div>
+                        </div>
+                        <div class="attendance-stat-card">
+                            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="totalAbsent">0</div>
+                                <div class="stat-label">Jumlah Tidak Hadir</div>
+                            </div>
+                        </div>
+                        <div class="attendance-stat-card">
+                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="totalLate">0</div>
+                                <div class="stat-label">Jumlah Lewat</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class Schedule List -->
+                <div class="tracker-card">
+                    <h3>Jadual Kelas Mingguan</h3>
+                    <div id="weeklySchedule" class="weekly-schedule">
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-week"></i>
+                            <h4>Tiada Jadual Kelas</h4>
+                            <p>Tambah jadual kelas untuk memulakan penjejakan kehadiran</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance History -->
+                <div class="tracker-card">
+                    <h3>Sejarah Kehadiran</h3>
+                    <div class="attendance-controls">
+                        <div class="filter-controls">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="filterAttendanceProgram">Program</label>
+                                    <select id="filterAttendanceProgram">
+                                        <option value="">Semua Program</option>
+                                        <option value="dsd">Diploma Seni Digital</option>
+                                        <option value="dkv">Diploma Komunikasi Visual</option>
+                                        <option value="dgd">Diploma Grafik Digital</option>
+                                        <option value="dwm">Diploma Multimedia Digital</option>
+                                        <option value="dit">Diploma Teknologi IT</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="filterAttendanceClass">Kelas</label>
+                                    <select id="filterAttendanceClass">
+                                        <option value="">Semua Kelas</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="filterAttendanceMonth">Bulan</label>
+                                    <select id="filterAttendanceMonth">
+                                        <option value="">Semua Bulan</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="attendanceHistory" class="attendance-history">
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <h4>Tiada Rekod Kehadiran</h4>
+                            <p>Mula rekod kehadiran untuk melihat sejarah</p>
                         </div>
                     </div>
                 </div>

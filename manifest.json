@@ -1,0 +1,103 @@
+{
+  "name": "BreyerHub - Portal Komuniti Kolej",
+  "short_name": "BreyerHub",
+  "description": "Platform digital untuk warga kolej yang menawarkan 5 program diploma: Culinary, Administrative Management, Computer System, Food & Beverage Management, dan Electrical Wiring & Maintenance",
+  "start_url": "/BreyerHub/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "scope": "/BreyerHub/",
+  "lang": "ms-MY",
+  "categories": ["education", "productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Study Timer",
+      "short_name": "Timer",
+      "description": "Start a Pomodoro study session",
+      "url": "/BreyerHub/#timer",
+      "icons": [{ "src": "icons/timer-shortcut.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Schedule",
+      "short_name": "Jadual",
+      "description": "View and manage your class schedule",
+      "url": "/BreyerHub/#schedule",
+      "icons": [{ "src": "icons/schedule-shortcut.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "GPA Calculator",
+      "short_name": "GPA",
+      "description": "Calculate your semester GPA",
+      "url": "/BreyerHub/#calculator",
+      "icons": [{ "src": "icons/gpa-shortcut.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "BreyerHub Home Page on Desktop"
+    },
+    {
+      "src": "screenshots/mobile-timer.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Study Timer on Mobile"
+    }
+  ],
+  "prefer_related_applications": false
+}

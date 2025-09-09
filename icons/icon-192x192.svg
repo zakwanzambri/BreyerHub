@@ -1,0 +1,45 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="96" cy="96" r="96" fill="url(#grad)"/>
+  
+  <!-- University Icon -->
+  <g transform="translate(48, 48)">
+    <!-- Main building -->
+    <rect x="20" y="60" width="56" height="36" fill="white" opacity="0.9"/>
+    
+    <!-- Columns -->
+    <rect x="24" y="45" width="6" height="51" fill="white"/>
+    <rect x="35" y="45" width="6" height="51" fill="white"/>
+    <rect x="46" y="45" width="6" height="51" fill="white"/>
+    <rect x="57" y="45" width="6" height="51" fill="white"/>
+    <rect x="68" y="45" width="6" height="51" fill="white"/>
+    
+    <!-- Roof -->
+    <polygon points="48,30 15,50 81,50" fill="white"/>
+    
+    <!-- Flag -->
+    <rect x="46" y="15" width="4" height="20" fill="white"/>
+    <rect x="50" y="15" width="15" height="8" fill="#ffd700"/>
+    
+    <!-- Door -->
+    <rect x="44" y="75" width="8" height="21" fill="#667eea"/>
+    
+    <!-- Windows -->
+    <rect x="28" y="68" width="8" height="8" fill="#667eea"/>
+    <rect x="60" y="68" width="8" height="8" fill="#667eea"/>
+    
+    <!-- Steps -->
+    <rect x="38" y="96" width="20" height="2" fill="white" opacity="0.7"/>
+    <rect x="35" y="98" width="26" height="2" fill="white" opacity="0.5"/>
+  </g>
+  
+  <!-- App Name -->
+  <text x="96" y="160" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">BreyerHub</text>
+</svg>
