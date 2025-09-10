@@ -709,6 +709,133 @@ main {
     top: 0;
 }
 
+/* Enhanced Timer Features */
+.timer-insights, .smart-recommendations {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.timer-insights:hover, .smart-recommendations:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.timer-insights h3, .smart-recommendations h3 {
+    margin: 0 0 15px 0;
+    color: var(--text-color);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.insights-content, .recommendations-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.insight-item, .recommendation-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--accent-bg);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.insight-item:hover, .recommendation-item:hover {
+    transform: translateX(4px);
+    background: var(--hover-bg);
+}
+
+.insight-item i, .recommendation-item i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.text-primary { color: var(--primary-color); }
+.text-warning { color: #f59e0b; }
+.text-success { color: var(--success-color); }
+.text-danger { color: #ef4444; }
+
+.productivity-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.productivity-high {
+    background: rgba(16, 185, 129, 0.1);
+    color: #16a34a;
+}
+
+.productivity-medium {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+
+.productivity-low {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.stat-value {
+    transition: all 0.3s ease;
+}
+
+.stat-value.updated {
+    transform: scale(1.1);
+    color: var(--primary-color);
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.performance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-excellent {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.badge-good {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.badge-average {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.badge-needs-improvement {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
 /* Schedule Styles */
 .schedule-container {
     display: grid;
@@ -2368,5 +2495,696 @@ footer {
     .contact-item {
         flex-direction: column;
         text-align: center;
+    }
+}
+
+/* Program-Specific Tools Styles */
+.program-selector {
+    margin-bottom: 2rem;
+}
+
+.program-selector select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1.1em;
+    background: white;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.program-selector select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.tools-container {
+    margin-top: 2rem;
+}
+
+.tools-placeholder {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    border: 2px dashed var(--border-color);
+}
+
+.tools-placeholder i {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.tools-placeholder h4 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.tools-placeholder p {
+    color: var(--muted-color);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.program-tools {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.tool-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.tool-card h3 {
+    background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+    color: white;
+    margin: 0;
+    padding: 1rem 1.5rem;
+    font-size: 1.2em;
+}
+
+.tool-card h3 i {
+    margin-right: 0.5rem;
+}
+
+.tool-content {
+    padding: 1.5rem;
+}
+
+/* Recipe Calculator Styles */
+.recipe-ingredients {
+    margin-top: 1.5rem;
+}
+
+.ingredient-list {
+    margin: 1rem 0;
+}
+
+.ingredient-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.ingredient-name,
+.ingredient-amount,
+.ingredient-unit {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9em;
+}
+
+.btn.remove {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: all 0.3s ease;
+}
+
+.btn.remove:hover {
+    background: #c62828;
+    transform: scale(1.1);
+}
+
+.recipe-results {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--success-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--success-color);
+}
+
+.results-content {
+    font-family: 'Courier New', monospace;
+}
+
+.results-content .ingredient-result {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+}
+
+/* Unit Converter Styles */
+.conversion-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--info-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--info-color);
+    font-size: 1.1em;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Electrical Calculator Styles */
+.ohms-law-diagram,
+.power-formulas {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    border-radius: 8px;
+}
+
+.formula-display h4 {
+    color: var(--accent-color);
+    font-size: 1.5em;
+    margin-bottom: 0.5rem;
+    font-family: 'Courier New', monospace;
+}
+
+.formula-display p {
+    color: var(--muted-color);
+    margin: 0;
+}
+
+.calculator-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.calculation-result,
+.power-result {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--warning-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--warning-color);
+}
+
+.calculation-result h4,
+.power-result h4 {
+    color: var(--warning-dark);
+    margin-bottom: 0.5rem;
+}
+
+.calculation-result .result-item,
+.power-result .result-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+/* Code Snippet Manager Styles */
+.code-form textarea {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.4;
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    resize: vertical;
+}
+
+.snippets-list {
+    margin-top: 2rem;
+    border-top: 2px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+
+.snippet-item {
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.snippet-header {
+    background: var(--accent-color);
+    color: white;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.snippet-title {
+    font-weight: 600;
+}
+
+.snippet-language {
+    background: rgba(255,255,255,0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8em;
+}
+
+.snippet-content {
+    padding: 1rem;
+}
+
+.snippet-code {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.snippet-description {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: var(--info-light);
+    border-radius: 4px;
+    color: var(--info-dark);
+    font-style: italic;
+}
+
+.snippet-actions {
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.snippet-actions .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9em;
+}
+
+/* Responsive Design for Tools */
+@media (max-width: 768px) {
+    .ingredient-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .calculator-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .tool-card h3 {
+        font-size: 1.1em;
+        padding: 0.75rem 1rem;
+    }
+    
+    .tool-content {
+        padding: 1rem;
+    }
+}
+
+/* F&B Management Tools Styles */
+.cost-ingredient-list {
+    margin: 1rem 0;
+}
+
+.cost-ingredient-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.cost-ingredient-name,
+.cost-ingredient-qty,
+.cost-ingredient-price {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9em;
+}
+
+.cost-results {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+    border-radius: 10px;
+    border-left: 4px solid var(--success-color);
+}
+
+.cost-breakdown {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cost-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.cost-item.total {
+    background: var(--accent-color);
+    color: white;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.cost-item.profit {
+    background: var(--success-color);
+    color: white;
+    font-weight: 600;
+}
+
+.cost-item.loss {
+    background: var(--danger-color);
+    color: white;
+    font-weight: 600;
+}
+
+.menu-display {
+    margin-top: 2rem;
+    border-top: 2px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+
+.menu-item {
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.menu-item-header {
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-item-title {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.menu-item-price {
+    background: rgba(255,255,255,0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-weight: 600;
+}
+
+.menu-item-content {
+    padding: 1rem;
+}
+
+.menu-item-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.menu-detail {
+    background: var(--info-light);
+    padding: 0.5rem;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.allergen-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.allergen-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.allergen-checkboxes label:hover {
+    background: var(--info-light);
+}
+
+.allergen-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.allergen-tag {
+    background: var(--warning-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+/* Administrative Management Tools Styles */
+.template-form {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.document-preview {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: white;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+}
+
+.document-content {
+    background: white;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.6;
+    min-height: 400px;
+    white-space: pre-wrap;
+}
+
+.document-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 1rem;
+}
+
+.document-date {
+    text-align: right;
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.document-signature {
+    margin-top: 3rem;
+    text-align: right;
+}
+
+.document-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.participants-section {
+    margin-top: 1.5rem;
+}
+
+.participant-list {
+    margin: 1rem 0;
+}
+
+.participant-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr auto;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.participant-name,
+.participant-email,
+.participant-role {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9em;
+}
+
+.meeting-results {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    border-radius: 10px;
+    border-left: 4px solid var(--info-color);
+}
+
+.meeting-summary {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.meeting-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.meeting-detail {
+    background: var(--info-light);
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.meeting-detail strong {
+    color: var(--info-dark);
+}
+
+.participant-summary {
+    margin-top: 1rem;
+}
+
+.participant-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.participant-role-badge {
+    background: var(--accent-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+.participant-role-badge.organizer {
+    background: var(--success-color);
+}
+
+.participant-role-badge.presenter {
+    background: var(--warning-color);
+}
+
+/* Template Specific Styles */
+.business-letter {
+    font-family: 'Times New Roman', serif;
+    line-height: 1.8;
+}
+
+.memo-format {
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+}
+
+.memo-header {
+    background: #f0f0f0;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.report-format {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.invoice-format {
+    font-family: Arial, sans-serif;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.invoice-table th,
+.invoice-table td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.invoice-table th {
+    background: var(--accent-color);
+    color: white;
+}
+
+/* Mobile Responsive for F&B and Admin */
+@media (max-width: 768px) {
+    .cost-ingredient-row,
+    .participant-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .menu-item-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .allergen-checkboxes {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .meeting-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .document-content {
+        padding: 1rem;
+        font-size: 0.9em;
     }
 }

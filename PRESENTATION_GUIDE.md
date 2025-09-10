@@ -118,8 +118,41 @@ Saya telah membangunkan sistem analytics dan goal tracking yang canggih untuk Br
 4. **Insights**: Show smart recommendations dan alerts
 5. **Goals**: Create a new goal live, show progress tracking
 6. **Achievements**: Show badge system dan unlocking mechanism
-7. **Integration**: Demonstrate how semua systems work together
-8. **Mobile**: Show responsive design on different screen sizes
+7. **PWA Installation**: Demonstrate install sebagai mobile app
+8. **Offline Mode**: Show app working without internet
+9. **Integration**: Demonstrate how semua systems work together
+10. **Mobile**: Show responsive design on different screen sizes
+
+---
+
+## 📱 **PWA INSTALLATION DEMO**
+
+### **Demo Script untuk Juri**
+*"Sekarang saya nak tunjuk feature yang sangat powerful - BreyerHub boleh diinstall sebagai mobile app!"*
+
+#### **Step 1: Show Install Process**
+- Show install banner/prompt dalam browser
+- Click "Install App" button
+- Demonstrate installation process
+- Show app icon appearing di home screen
+
+#### **Step 2: Launch as App**
+- Close browser
+- Launch BreyerHub dari home screen icon
+- Show full-screen experience tanpa browser UI
+- Demonstrate native app feel
+
+#### **Step 3: Offline Capabilities**
+- Turn off internet connection
+- Show app masih berfungsi
+- Navigate through analytics dashboard
+- Add new data (will sync when online)
+
+#### **Key Talking Points**
+- *"Satu development, jalan di all platforms"*
+- *"No need app store approval"*
+- *"Native app experience with web technology"*
+- *"Offline functionality untuk uninterrupted use"*
 
 ---
 

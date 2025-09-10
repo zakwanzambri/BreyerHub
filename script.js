@@ -679,6 +679,252 @@ function loadTimerStats() {
     if (completedElement) completedElement.textContent = todayStats.completedSessions;
     if (studyTimeElement) studyTimeElement.textContent = `${todayStats.totalStudyTime} minit`;
     if (breakTimeElement) breakTimeElement.textContent = `${todayStats.totalBreakTime} minit`;
+
+    // Load enhanced stats
+    updateEnhancedTimerStats(stats, todayStats);
+}
+
+// Enhanced Timer Features
+function updateEnhancedTimerStats(stats, todayStats) {
+    // Update productivity score
+    const productivityScore = calculateProductivityScore(todayStats);
+    const productivityElement = document.getElementById('productivity-score');
+    if (productivityElement) {
+        productivityElement.textContent = `${productivityScore}%`;
+        // Add visual indicator
+        const indicator = getProductivityIndicator(productivityScore);
+        productivityElement.className = `stat-value ${indicator}`;
+    }
+
+    // Update daily streak
+    const streak = calculateDailyStreak(stats);
+    const streakElement = document.getElementById('daily-streak');
+    if (streakElement) {
+        streakElement.textContent = streak;
+        if (streak > 0) {
+            streakElement.classList.add('updated');
+            setTimeout(() => streakElement.classList.remove('updated'), 300);
+        }
+    }
+
+    // Generate insights
+    generateTimerInsights(stats, todayStats);
+    
+    // Generate recommendations
+    generateSmartRecommendations(stats, todayStats);
+}
+
+function calculateProductivityScore(todayStats) {
+    const targetSessions = 8; // Target sessions per day
+    const sessionScore = Math.min((todayStats.completedSessions / targetSessions) * 60, 60);
+    
+    const targetStudyTime = 200; // Target 200 minutes (3+ hours) per day
+    const timeScore = Math.min((todayStats.totalStudyTime / targetStudyTime) * 40, 40);
+    
+    return Math.round(sessionScore + timeScore);
+}
+
+function getProductivityIndicator(score) {
+    if (score >= 80) return 'productivity-high';
+    if (score >= 60) return 'productivity-medium';
+    return 'productivity-low';
+}
+
+function calculateDailyStreak(stats) {
+    const dates = Object.keys(stats).sort((a, b) => new Date(b) - new Date(a));
+    let streak = 0;
+    const today = new Date().toDateString();
+    
+    for (let date of dates) {
+        const dayData = stats[date];
+        if (dayData.completedSessions >= 4) { // Minimum 4 sessions for streak
+            streak++;
+        } else {
+            break;
+        }
+    }
+    
+    return streak;
+}
+
+function generateTimerInsights(stats, todayStats) {
+    const insights = [];
+    const insightsContainer = document.getElementById('timer-insights-content');
+    if (!insightsContainer) return;
+
+    // Session completion insight
+    if (todayStats.completedSessions >= 8) {
+        insights.push({
+            icon: 'fas fa-trophy text-success',
+            text: `Excellent! Anda telah menyelesaikan ${todayStats.completedSessions} sesi hari ini!`
+        });
+    } else if (todayStats.completedSessions >= 4) {
+        insights.push({
+            icon: 'fas fa-thumbs-up text-primary',
+            text: `Bagus! ${todayStats.completedSessions} sesi selesai. Teruskan usaha!`
+        });
+    } else if (todayStats.completedSessions > 0) {
+        insights.push({
+            icon: 'fas fa-chart-line text-warning',
+            text: `${todayStats.completedSessions} sesi selesai. Cuba capai sekurang-kurangnya 4 sesi hari ini.`
+        });
+    }
+
+    // Study time insight
+    if (todayStats.totalStudyTime >= 180) {
+        insights.push({
+            icon: 'fas fa-clock text-success',
+            text: `Masa belajar hari ini: ${todayStats.totalStudyTime} minit. Pencapaian cemerlang!`
+        });
+    } else if (todayStats.totalStudyTime >= 120) {
+        insights.push({
+            icon: 'fas fa-clock text-primary',
+            text: `${todayStats.totalStudyTime} minit belajar hari ini. Pencapaian yang baik!`
+        });
+    }
+
+    // Weekly pattern insight
+    const weeklyPattern = analyzeWeeklyPattern(stats);
+    if (weeklyPattern) {
+        insights.push({
+            icon: 'fas fa-calendar-week text-primary',
+            text: weeklyPattern
+        });
+    }
+
+    // Render insights
+    if (insights.length === 0) {
+        insights.push({
+            icon: 'fas fa-clock text-primary',
+            text: 'Mulakan sesi pertama untuk melihat analisis!'
+        });
+    }
+
+    insightsContainer.innerHTML = insights.map(insight => `
+        <div class="insight-item">
+            <i class="${insight.icon}"></i>
+            <span>${insight.text}</span>
+        </div>
+    `).join('');
+}
+
+function generateSmartRecommendations(stats, todayStats) {
+    const recommendations = [];
+    const recommendationsContainer = document.getElementById('smart-recommendations-content');
+    if (!recommendationsContainer) return;
+
+    const currentHour = new Date().getHours();
+    
+    // Time-based recommendations
+    if (currentHour >= 8 && currentHour <= 11 && todayStats.completedSessions === 0) {
+        recommendations.push({
+            icon: 'fas fa-sun text-warning',
+            text: 'Pagi adalah masa terbaik untuk fokus! Mulakan sesi belajar sekarang.'
+        });
+    } else if (currentHour >= 14 && currentHour <= 16) {
+        recommendations.push({
+            icon: 'fas fa-brain text-primary',
+            text: 'Masa tengah hari - ideal untuk topik yang mencabar!'
+        });
+    } else if (currentHour >= 19 && currentHour <= 21) {
+        recommendations.push({
+            icon: 'fas fa-book text-primary',
+            text: 'Masa malam sesuai untuk mengulangkaji dan menyimpulkan pembelajaran.'
+        });
+    }
+
+    // Session-based recommendations
+    if (todayStats.completedSessions === 0) {
+        recommendations.push({
+            icon: 'fas fa-play text-success',
+            text: 'Mulakan dengan sesi 25 minit untuk momentum positif!'
+        });
+    } else if (todayStats.completedSessions >= 4 && todayStats.completedSessions < 6) {
+        recommendations.push({
+            icon: 'fas fa-fire text-warning',
+            text: 'Anda sudah separuh jalan! Teruskan untuk capai target harian.'
+        });
+    } else if (todayStats.completedSessions >= 6) {
+        recommendations.push({
+            icon: 'fas fa-medal text-success',
+            text: 'Prestasi hebat! Pertimbangkan rehat lebih lama atau sesi ringan.'
+        });
+    }
+
+    // Break pattern recommendations
+    const breakRatio = todayStats.totalBreakTime / Math.max(todayStats.totalStudyTime, 1);
+    if (breakRatio < 0.2 && todayStats.completedSessions > 2) {
+        recommendations.push({
+            icon: 'fas fa-coffee text-warning',
+            text: 'Nampaknya anda perlu lebih banyak rehat. Jangan lupa untuk berehat!'
+        });
+    }
+
+    // Performance-based recommendations
+    const recentPerformance = analyzeRecentPerformance(stats);
+    if (recentPerformance === 'improving') {
+        recommendations.push({
+            icon: 'fas fa-arrow-up text-success',
+            text: 'Prestasi anda semakin meningkat! Teruskan momentum ini.'
+        });
+    } else if (recentPerformance === 'declining') {
+        recommendations.push({
+            icon: 'fas fa-chart-line text-warning',
+            text: 'Cuba kurangkan gangguan dan fokus pada kualiti sesi belajar.'
+        });
+    }
+
+    // Default recommendation
+    if (recommendations.length === 0) {
+        recommendations.push({
+            icon: 'fas fa-lightbulb text-warning',
+            text: 'Selesaikan beberapa sesi untuk mendapat cadangan peribadi'
+        });
+    }
+
+    recommendationsContainer.innerHTML = recommendations.map(rec => `
+        <div class="recommendation-item">
+            <i class="${rec.icon}"></i>
+            <span>${rec.text}</span>
+        </div>
+    `).join('');
+}
+
+function analyzeWeeklyPattern(stats) {
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toDateString();
+        last7Days.push(stats[dateStr] || { completedSessions: 0, totalStudyTime: 0 });
+    }
+
+    const avgSessions = last7Days.reduce((sum, day) => sum + day.completedSessions, 0) / 7;
+    const avgStudyTime = last7Days.reduce((sum, day) => sum + day.totalStudyTime, 0) / 7;
+
+    if (avgSessions >= 6) {
+        return `Minggu ini purata ${Math.round(avgSessions)} sesi sehari - konsisten!`;
+    } else if (avgSessions >= 3) {
+        return `Purata ${Math.round(avgSessions)} sesi sehari minggu ini. Boleh tingkatkan lagi!`;
+    } else if (avgSessions > 0) {
+        return `${Math.round(avgSessions)} sesi purata sehari. Perlu lebih konsisten.`;
+    }
+    return null;
+}
+
+function analyzeRecentPerformance(stats) {
+    const dates = Object.keys(stats).sort((a, b) => new Date(b) - new Date(a));
+    if (dates.length < 3) return null;
+
+    const recent3Days = dates.slice(0, 3).map(date => stats[date].completedSessions);
+    const previous3Days = dates.slice(3, 6).map(date => stats[date]?.completedSessions || 0);
+
+    const recentAvg = recent3Days.reduce((a, b) => a + b, 0) / 3;
+    const previousAvg = previous3Days.reduce((a, b) => a + b, 0) / 3;
+
+    if (recentAvg > previousAvg * 1.2) return 'improving';
+    if (recentAvg < previousAvg * 0.8) return 'declining';
+    return 'stable';
 }
 
 function getSessionCompletionMessage() {
@@ -863,9 +1109,189 @@ async function requestNotificationPermission() {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
             console.log('PWA: Notification permission granted');
+            
+            // Enable enhanced notification features
+            enableSmartNotifications();
+            
         } else {
             console.log('PWA: Notification permission denied');
         }
+    }
+}
+
+// Enhanced Notification System
+function enableSmartNotifications() {
+    // Schedule daily study reminders
+    scheduleStudyReminders();
+    
+    // Set up assignment deadline notifications
+    scheduleAssignmentReminders();
+    
+    // Set up attendance reminders
+    scheduleAttendanceReminders();
+}
+
+function scheduleStudyReminders() {
+    // Morning motivation (9 AM)
+    scheduleNotification(
+        'morning-motivation',
+        'Start Your Day Strong! 💪',
+        'Good morning! Ready to tackle your study goals today?',
+        { hour: 9, minute: 0 }
+    );
+    
+    // Afternoon productivity (2 PM)
+    scheduleNotification(
+        'afternoon-boost',
+        'Afternoon Focus Time! 🧠',
+        'Perfect time for a productive study session. Your brain is at peak performance!',
+        { hour: 14, minute: 0 }
+    );
+    
+    // Evening review (7 PM)
+    scheduleNotification(
+        'evening-review',
+        'Time to Review! 📚',
+        'End your day by reviewing what you\'ve learned. Great for retention!',
+        { hour: 19, minute: 0 }
+    );
+}
+
+function scheduleAssignmentReminders() {
+    const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+    
+    assignments.forEach(assignment => {
+        if (assignment.status !== 'completed') {
+            const dueDate = new Date(assignment.dueDate);
+            const now = new Date();
+            const timeDiff = dueDate.getTime() - now.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            // Remind 3 days before
+            if (daysDiff === 3) {
+                showEnhancedNotification(
+                    'Assignment Reminder 📝',
+                    `${assignment.title} is due in 3 days. Start working on it!`,
+                    'warning'
+                );
+            }
+            
+            // Remind 1 day before
+            if (daysDiff === 1) {
+                showEnhancedNotification(
+                    'Assignment Due Tomorrow! ⚠️',
+                    `Don't forget: ${assignment.title} is due tomorrow!`,
+                    'urgent'
+                );
+            }
+        }
+    });
+}
+
+function scheduleNotification(id, title, message, time) {
+    const now = new Date();
+    const scheduledTime = new Date();
+    scheduledTime.setHours(time.hour, time.minute, 0, 0);
+    
+    // If time has passed today, schedule for tomorrow
+    if (scheduledTime <= now) {
+        scheduledTime.setDate(scheduledTime.getDate() + 1);
+    }
+    
+    const timeUntilNotification = scheduledTime.getTime() - now.getTime();
+    
+    if (timeUntilNotification > 0 && timeUntilNotification < 24 * 60 * 60 * 1000) {
+        setTimeout(() => {
+            showEnhancedNotification(title, message, 'info');
+        }, timeUntilNotification);
+    }
+}
+
+function showEnhancedNotification(title, message, type = 'info') {
+    // Check if notifications are supported and permitted
+    if ('Notification' in window && Notification.permission === 'granted') {
+        const options = {
+            body: message,
+            icon: '/BreyerHub/icons/icon-192x192.png',
+            badge: '/BreyerHub/icons/icon-192x192.png',
+            tag: type,
+            requireInteraction: type === 'critical' || type === 'urgent'
+        };
+        
+        const notification = new Notification(title, options);
+        
+        // Auto-close after 10 seconds (except for critical/urgent)
+        if (type !== 'critical' && type !== 'urgent') {
+            setTimeout(() => notification.close(), 10000);
+        }
+        
+        notification.onclick = function() {
+            window.focus();
+            this.close();
+        };
+    }
+    
+    // Also show in-app notification
+    showInAppNotification(title, message, type);
+}
+
+function showInAppNotification(title, message, type) {
+    const notification = document.createElement('div');
+    notification.className = `enhanced-notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-header">
+            <span class="notification-icon">${getNotificationIcon(type)}</span>
+            <span class="notification-title">${title}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+        <div class="notification-body">${message}</div>
+    `;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 350px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        z-index: 10000;
+        animation: slideInRight 0.3s ease;
+        border-left: 4px solid ${getNotificationColor(type)};
+        padding: 15px;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 8 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 8000);
+}
+
+function getNotificationIcon(type) {
+    switch (type) {
+        case 'critical': return '🚨';
+        case 'urgent': return '⚠️';
+        case 'warning': return '⚠️';
+        case 'success': return '✅';
+        case 'info': return 'ℹ️';
+        default: return 'ℹ️';
+    }
+}
+
+function getNotificationColor(type) {
+    switch (type) {
+        case 'critical': return '#dc2626';
+        case 'urgent': return '#f59e0b';
+        case 'warning': return '#f59e0b';
+        case 'success': return '#16a34a';
+        case 'info': return '#3b82f6';
+        default: return '#6b7280';
     }
 }
 
@@ -2758,6 +3184,208 @@ class AnalyticsManager {
         this.renderInsights(insights);
     }
 
+    // Enhanced Predictive Analytics
+    generatePredictiveInsights() {
+        const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        const attendance = JSON.parse(localStorage.getItem('attendance') || '[]');
+        
+        const predictions = [];
+        
+        // GPA Prediction
+        const predictedGPA = this.predictFutureGPA(grades);
+        if (predictedGPA) {
+            predictions.push({
+                icon: '🔮',
+                title: 'GPA Prediction',
+                message: `Based on current trends, your semester GPA is projected to be ${predictedGPA}`
+            });
+        }
+        
+        // Risk Assessment
+        const riskLevel = this.assessAcademicRisk(assignments, grades, attendance);
+        if (riskLevel !== 'low') {
+            predictions.push({
+                icon: '⚠️',
+                title: 'Risk Alert',
+                message: this.getRiskMessage(riskLevel)
+            });
+        }
+        
+        // Performance Optimization
+        const optimization = this.suggestOptimization(grades, attendance);
+        if (optimization) {
+            predictions.push({
+                icon: '📈',
+                title: 'Optimization Tip',
+                message: optimization
+            });
+        }
+        
+        return predictions;
+    }
+
+    predictFutureGPA(grades) {
+        if (grades.length < 3) return null;
+        
+        // Calculate trend from recent grades
+        const recentGrades = grades.slice(-5).map(g => this.gradeToGPA(g.grade));
+        
+        // Simple linear regression for trend
+        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+        const n = recentGrades.length;
+        
+        recentGrades.forEach((gpa, index) => {
+            sumX += index;
+            sumY += gpa;
+            sumXY += index * gpa;
+            sumXX += index * index;
+        });
+        
+        const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        
+        // Predict next few grades
+        const projectedGPA = slope * (n + 2) + intercept;
+        
+        // Clamp between 0 and 4
+        const clampedGPA = Math.max(0, Math.min(4, projectedGPA));
+        
+        return clampedGPA.toFixed(2);
+    }
+
+    assessAcademicRisk(assignments, grades, attendance) {
+        let riskScore = 0;
+        
+        // Assignment completion risk
+        const overdueCount = assignments.filter(a => 
+            a.status !== 'completed' && new Date(a.dueDate) < new Date()
+        ).length;
+        riskScore += overdueCount * 15;
+        
+        // Grade performance risk
+        if (grades.length >= 3) {
+            const recentAvgGPA = grades.slice(-3).reduce((acc, g) => 
+                acc + this.gradeToGPA(g.grade), 0) / 3;
+            if (recentAvgGPA < 2.5) riskScore += 25;
+            else if (recentAvgGPA < 3.0) riskScore += 15;
+        }
+        
+        // Attendance risk
+        const recentAttendance = attendance.slice(-10);
+        if (recentAttendance.length > 0) {
+            const attendanceRate = recentAttendance.filter(a => a.attended).length / recentAttendance.length;
+            if (attendanceRate < 0.7) riskScore += 30;
+            else if (attendanceRate < 0.8) riskScore += 20;
+        }
+        
+        // Study time risk
+        const studyData = JSON.parse(localStorage.getItem('studyTimer') || '{}');
+        const avgDailyStudy = (studyData.totalTime || 0) / 30;
+        if (avgDailyStudy < 30) riskScore += 20; // Less than 30 min/day
+        
+        if (riskScore >= 50) return 'high';
+        if (riskScore >= 25) return 'medium';
+        return 'low';
+    }
+
+    getRiskMessage(riskLevel) {
+        switch (riskLevel) {
+            case 'high':
+                return 'High academic risk detected. Immediate action needed - consider study plan review and seeking help.';
+            case 'medium':
+                return 'Moderate risk identified. Focus on improving attendance and completing assignments on time.';
+            default:
+                return 'Low risk detected. Continue current study habits with minor adjustments.';
+        }
+    }
+
+    suggestOptimization(grades, attendance) {
+        // Analyze correlation between attendance and grades
+        if (grades.length >= 5 && attendance.length >= 10) {
+            const gradesBySubject = {};
+            const attendanceBySubject = {};
+            
+            grades.forEach(grade => {
+                if (!gradesBySubject[grade.subject]) {
+                    gradesBySubject[grade.subject] = [];
+                }
+                gradesBySubject[grade.subject].push(this.gradeToGPA(grade.grade));
+            });
+            
+            attendance.forEach(att => {
+                if (!attendanceBySubject[att.subject]) {
+                    attendanceBySubject[att.subject] = [];
+                }
+                attendanceBySubject[att.subject].push(att.attended ? 1 : 0);
+            });
+            
+            // Find subject with lowest performance
+            let lowestSubject = null;
+            let lowestGPA = 4.0;
+            
+            Object.keys(gradesBySubject).forEach(subject => {
+                const avgGPA = gradesBySubject[subject].reduce((a, b) => a + b, 0) / gradesBySubject[subject].length;
+                if (avgGPA < lowestGPA) {
+                    lowestGPA = avgGPA;
+                    lowestSubject = subject;
+                }
+            });
+            
+            if (lowestSubject && attendanceBySubject[lowestSubject]) {
+                const attendanceRate = attendanceBySubject[lowestSubject].reduce((a, b) => a + b, 0) / attendanceBySubject[lowestSubject].length;
+                
+                if (attendanceRate < 0.8) {
+                    return `Improve attendance in ${lowestSubject} (current: ${Math.round(attendanceRate * 100)}%) to boost your ${lowestGPA.toFixed(2)} GPA in this subject.`;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    // Enhanced Goal Progress Prediction
+    predictGoalCompletion(goal) {
+        const timeRemaining = new Date(goal.deadline) - new Date();
+        const daysRemaining = Math.ceil(timeRemaining / (1000 * 60 * 60 * 24));
+        
+        if (daysRemaining <= 0) return { probability: 0, status: 'overdue' };
+        
+        const progressRate = goal.current / (goal.target || 1);
+        const dailyProgressNeeded = (goal.target - goal.current) / daysRemaining;
+        
+        // Historical progress analysis
+        const historicalRate = this.calculateHistoricalProgressRate(goal);
+        
+        let probability;
+        if (historicalRate >= dailyProgressNeeded) {
+            probability = Math.min(95, 60 + (historicalRate / dailyProgressNeeded) * 30);
+        } else {
+            probability = Math.max(5, 60 - (dailyProgressNeeded / historicalRate) * 20);
+        }
+        
+        let status;
+        if (probability >= 80) status = 'likely';
+        else if (probability >= 60) status = 'possible';
+        else if (probability >= 40) status = 'challenging';
+        else status = 'unlikely';
+        
+        return { probability: Math.round(probability), status };
+    }
+
+    calculateHistoricalProgressRate(goal) {
+        // Simulate daily progress based on goal type and user patterns
+        const baseRates = {
+            academic: 0.15,    // 15% per day
+            assignment: 0.20,  // 20% per day
+            attendance: 0.14,  // 14% per day (daily classes)
+            study: 0.12,       // 12% per day
+            personal: 0.10     // 10% per day
+        };
+        
+        return baseRates[goal.category] || 0.12;
+    }
+
     renderInsights(insights) {
         const container = document.getElementById('insightsContainer');
         if (!container) return;
@@ -3115,3 +3743,1062 @@ class GoalManager {
 // Global instances for analytics and goals
 let analyticsManager;
 let goalManager;
+
+// Program-Specific Tools Manager
+class ProgramToolsManager {
+    constructor() {
+        this.currentProgram = '';
+        this.savedSnippets = JSON.parse(localStorage.getItem('codeSnippets') || '[]');
+        this.recipeHistory = JSON.parse(localStorage.getItem('recipeHistory') || '[]');
+    }
+
+    switchProgram(program) {
+        this.currentProgram = program;
+        const container = document.getElementById('toolsContainer');
+        
+        // Hide all program tools
+        document.querySelectorAll('.program-tools').forEach(el => {
+            el.style.display = 'none';
+        });
+
+        if (program) {
+            // Show placeholder
+            container.querySelector('.tools-placeholder').style.display = 'none';
+            
+            // Show selected program tools
+            const toolsElement = document.getElementById(`${program}Tools`);
+            if (toolsElement) {
+                toolsElement.style.display = 'block';
+                this.initializeProgramTools(program);
+            }
+        } else {
+            // Show placeholder
+            container.querySelector('.tools-placeholder').style.display = 'block';
+        }
+    }
+
+    initializeProgramTools(program) {
+        switch (program) {
+            case 'culinary':
+                this.initializeCulinaryTools();
+                break;
+            case 'electrical':
+                this.initializeElectricalTools();
+                break;
+            case 'computer':
+                this.initializeComputerTools();
+                break;
+            case 'fnb':
+                this.initializeFnBTools();
+                break;
+            case 'admin':
+                this.initializeAdminTools();
+                break;
+        }
+    }
+
+    initializeCulinaryTools() {
+        // Initialize recipe calculator with default ingredient
+        if (document.querySelectorAll('.ingredient-row').length === 1) {
+            // Already initialized
+            return;
+        }
+    }
+
+    initializeElectricalTools() {
+        // Clear any previous calculations
+        document.getElementById('ohmsResult').innerHTML = '';
+        document.getElementById('powerResult').innerHTML = '';
+    }
+
+    initializeComputerTools() {
+        this.displaySavedSnippets();
+    }
+
+    initializeFnBTools() {
+        // Initialize with one cost ingredient row
+        const costList = document.getElementById('costIngredientList');
+        if (costList && costList.children.length <= 1) {
+            // Already has default row
+        }
+        this.displaySavedMenuItems();
+    }
+
+    initializeAdminTools() {
+        // Initialize with one participant row
+        const participantList = document.getElementById('participantList');
+        if (participantList && participantList.children.length <= 1) {
+            // Already has default row
+        }
+    }
+
+    displaySavedSnippets() {
+        const container = document.getElementById('savedSnippets');
+        if (!container) return;
+
+        if (this.savedSnippets.length === 0) {
+            container.innerHTML = '<p>Tiada kod tersimpan. Tambah kod pertama anda!</p>';
+            return;
+        }
+
+        container.innerHTML = this.savedSnippets.map(snippet => `
+            <div class="snippet-item">
+                <div class="snippet-header">
+                    <span class="snippet-title">${snippet.title}</span>
+                    <span class="snippet-language">${snippet.language}</span>
+                </div>
+                <div class="snippet-content">
+                    <div class="snippet-code">${this.escapeHtml(snippet.code)}</div>
+                    ${snippet.description ? `<div class="snippet-description">${snippet.description}</div>` : ''}
+                </div>
+                <div class="snippet-actions">
+                    <button class="btn secondary" onclick="programTools.copySnippet('${snippet.id}')">
+                        <i class="fas fa-copy"></i> Salin
+                    </button>
+                    <button class="btn danger" onclick="programTools.deleteSnippet('${snippet.id}')">
+                        <i class="fas fa-trash"></i> Padam
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+}
+
+// Culinary Tools
+class CulinaryTools {
+    addIngredient() {
+        const list = document.getElementById('ingredientList');
+        const newRow = document.createElement('div');
+        newRow.className = 'ingredient-row';
+        newRow.innerHTML = `
+            <input type="text" placeholder="Nama bahan" class="ingredient-name">
+            <input type="number" placeholder="Kuantiti" class="ingredient-amount" step="0.1">
+            <select class="ingredient-unit">
+                <option value="g">gram</option>
+                <option value="kg">kilogram</option>
+                <option value="ml">mililiter</option>
+                <option value="l">liter</option>
+                <option value="cup">cawan</option>
+                <option value="tbsp">sudu besar</option>
+                <option value="tsp">sudu teh</option>
+            </select>
+            <button type="button" onclick="culinaryTools.removeIngredient(this)" class="btn remove">×</button>
+        `;
+        list.appendChild(newRow);
+    }
+
+    removeIngredient(button) {
+        const rows = document.querySelectorAll('.ingredient-row');
+        if (rows.length > 1) {
+            button.parentElement.remove();
+        }
+    }
+
+    calculateRecipe() {
+        const originalServings = parseInt(document.getElementById('originalServings').value);
+        const targetServings = parseInt(document.getElementById('targetServings').value);
+        
+        if (!originalServings || !targetServings) {
+            alert('Sila masukkan bilangan sajian yang sah');
+            return;
+        }
+
+        const multiplier = targetServings / originalServings;
+        const rows = document.querySelectorAll('.ingredient-row');
+        let results = [];
+
+        rows.forEach(row => {
+            const name = row.querySelector('.ingredient-name').value;
+            const amount = parseFloat(row.querySelector('.ingredient-amount').value);
+            const unit = row.querySelector('.ingredient-unit').value;
+
+            if (name && amount) {
+                const newAmount = (amount * multiplier).toFixed(2);
+                results.push({ name, originalAmount: amount, newAmount, unit });
+            }
+        });
+
+        this.displayRecipeResults(results, originalServings, targetServings);
+    }
+
+    displayRecipeResults(results, originalServings, targetServings) {
+        const resultContainer = document.getElementById('recipeResults');
+        const contentContainer = document.getElementById('resultsContent');
+        
+        if (results.length === 0) {
+            alert('Sila masukkan sekurang-kurangnya satu bahan');
+            return;
+        }
+
+        contentContainer.innerHTML = `
+            <h5>Resipi untuk ${targetServings} sajian (dari ${originalServings} sajian asal):</h5>
+            ${results.map(item => `
+                <div class="ingredient-result">
+                    <span>${item.name}</span>
+                    <span>${item.newAmount} ${item.unit}</span>
+                </div>
+            `).join('')}
+        `;
+        
+        resultContainer.style.display = 'block';
+    }
+
+    convertUnits() {
+        const value = parseFloat(document.getElementById('convertValue').value);
+        const fromUnit = document.getElementById('fromUnit').value;
+        const toUnit = document.getElementById('toUnit').value;
+        
+        if (!value) {
+            alert('Sila masukkan nilai untuk ditukar');
+            return;
+        }
+
+        const result = this.performUnitConversion(value, fromUnit, toUnit);
+        const resultContainer = document.getElementById('conversionResult');
+        
+        if (result !== null) {
+            resultContainer.innerHTML = `
+                <strong>${value} ${fromUnit} = ${result.toFixed(3)} ${toUnit}</strong>
+            `;
+        } else {
+            resultContainer.innerHTML = `
+                <span style="color: var(--danger-color);">Penukaran dari ${fromUnit} ke ${toUnit} tidak disokong</span>
+            `;
+        }
+    }
+
+    performUnitConversion(value, from, to) {
+        // Conversion rates to base units (ml for volume, g for weight)
+        const conversions = {
+            // Volume (to ml)
+            'ml': 1,
+            'l': 1000,
+            'cup': 250,
+            'tbsp': 15,
+            'tsp': 5,
+            // Weight (to g)
+            'g': 1,
+            'kg': 1000,
+            'oz': 28.35,
+            'lb': 453.59
+        };
+
+        // Check if both units are in the same category
+        const volumeUnits = ['ml', 'l', 'cup', 'tbsp', 'tsp'];
+        const weightUnits = ['g', 'kg', 'oz', 'lb'];
+        
+        const fromIsVolume = volumeUnits.includes(from);
+        const toIsVolume = volumeUnits.includes(to);
+        const fromIsWeight = weightUnits.includes(from);
+        const toIsWeight = weightUnits.includes(to);
+
+        if ((fromIsVolume && toIsVolume) || (fromIsWeight && toIsWeight)) {
+            const fromRate = conversions[from];
+            const toRate = conversions[to];
+            return (value * fromRate) / toRate;
+        }
+
+        return null; // Cannot convert between different categories
+    }
+}
+
+// Electrical Tools
+class ElectricalTools {
+    calculateVoltage() {
+        const current = parseFloat(document.getElementById('current').value);
+        const resistance = parseFloat(document.getElementById('resistance').value);
+        
+        if (!current || !resistance) {
+            alert('Sila masukkan nilai arus dan rintangan');
+            return;
+        }
+
+        const voltage = current * resistance;
+        document.getElementById('voltage').value = voltage.toFixed(2);
+        
+        this.displayOhmsResult('voltage', voltage, current, resistance);
+    }
+
+    calculateCurrent() {
+        const voltage = parseFloat(document.getElementById('voltage').value);
+        const resistance = parseFloat(document.getElementById('resistance').value);
+        
+        if (!voltage || !resistance) {
+            alert('Sila masukkan nilai voltan dan rintangan');
+            return;
+        }
+
+        const current = voltage / resistance;
+        document.getElementById('current').value = current.toFixed(3);
+        
+        this.displayOhmsResult('current', current, voltage, resistance);
+    }
+
+    calculateResistance() {
+        const voltage = parseFloat(document.getElementById('voltage').value);
+        const current = parseFloat(document.getElementById('current').value);
+        
+        if (!voltage || !current) {
+            alert('Sila masukkan nilai voltan dan arus');
+            return;
+        }
+
+        const resistance = voltage / current;
+        document.getElementById('resistance').value = resistance.toFixed(2);
+        
+        this.displayOhmsResult('resistance', resistance, voltage, current);
+    }
+
+    displayOhmsResult(calculated, value, param1, param2) {
+        const resultContainer = document.getElementById('ohmsResult');
+        let resultText = '';
+        
+        switch (calculated) {
+            case 'voltage':
+                resultText = `
+                    <h4>Hasil Pengiraan Voltan</h4>
+                    <div class="result-item">
+                        <span>Voltan (V)</span>
+                        <span><strong>${value.toFixed(2)} V</strong></span>
+                    </div>
+                    <div class="result-item">
+                        <span>Formula</span>
+                        <span>V = I × R = ${param1}A × ${param2}Ω</span>
+                    </div>
+                `;
+                break;
+            case 'current':
+                resultText = `
+                    <h4>Hasil Pengiraan Arus</h4>
+                    <div class="result-item">
+                        <span>Arus (A)</span>
+                        <span><strong>${value.toFixed(3)} A</strong></span>
+                    </div>
+                    <div class="result-item">
+                        <span>Formula</span>
+                        <span>I = V / R = ${param1}V / ${param2}Ω</span>
+                    </div>
+                `;
+                break;
+            case 'resistance':
+                resultText = `
+                    <h4>Hasil Pengiraan Rintangan</h4>
+                    <div class="result-item">
+                        <span>Rintangan (Ω)</span>
+                        <span><strong>${value.toFixed(2)} Ω</strong></span>
+                    </div>
+                    <div class="result-item">
+                        <span>Formula</span>
+                        <span>R = V / I = ${param1}V / ${param2}A</span>
+                    </div>
+                `;
+                break;
+        }
+        
+        resultContainer.innerHTML = resultText;
+    }
+
+    calculatePower() {
+        const voltage = parseFloat(document.getElementById('powerVoltage').value);
+        const current = parseFloat(document.getElementById('powerCurrent').value);
+        const resistance = parseFloat(document.getElementById('powerResistance').value);
+        
+        let power = 0;
+        let formula = '';
+        
+        if (voltage && current) {
+            power = voltage * current;
+            formula = `P = V × I = ${voltage}V × ${current}A`;
+        } else if (current && resistance) {
+            power = current * current * resistance;
+            formula = `P = I² × R = ${current}²A × ${resistance}Ω`;
+        } else if (voltage && resistance) {
+            power = (voltage * voltage) / resistance;
+            formula = `P = V² / R = ${voltage}²V / ${resistance}Ω`;
+        } else {
+            alert('Sila masukkan sekurang-kurangnya dua nilai untuk mengira kuasa');
+            return;
+        }
+
+        this.displayPowerResult(power, formula);
+    }
+
+    displayPowerResult(power, formula) {
+        const resultContainer = document.getElementById('powerResult');
+        resultContainer.innerHTML = `
+            <h4>Hasil Pengiraan Kuasa</h4>
+            <div class="result-item">
+                <span>Kuasa (W)</span>
+                <span><strong>${power.toFixed(2)} W</strong></span>
+            </div>
+            <div class="result-item">
+                <span>Kuasa (kW)</span>
+                <span><strong>${(power/1000).toFixed(3)} kW</strong></span>
+            </div>
+            <div class="result-item">
+                <span>Formula</span>
+                <span>${formula}</span>
+            </div>
+        `;
+    }
+
+    clearCalculator() {
+        document.getElementById('voltage').value = '';
+        document.getElementById('current').value = '';
+        document.getElementById('resistance').value = '';
+        document.getElementById('powerVoltage').value = '';
+        document.getElementById('powerCurrent').value = '';
+        document.getElementById('powerResistance').value = '';
+        document.getElementById('ohmsResult').innerHTML = '';
+        document.getElementById('powerResult').innerHTML = '';
+    }
+}
+
+// Computer Tools
+class ComputerTools {
+    saveSnippet() {
+        const title = document.getElementById('snippetTitle').value;
+        const language = document.getElementById('snippetLanguage').value;
+        const code = document.getElementById('snippetCode').value;
+        const description = document.getElementById('snippetDescription').value;
+        
+        if (!title || !code) {
+            alert('Sila masukkan tajuk dan kod');
+            return;
+        }
+
+        const snippet = {
+            id: Date.now().toString(),
+            title,
+            language,
+            code,
+            description,
+            created: new Date().toISOString()
+        };
+
+        programTools.savedSnippets.push(snippet);
+        localStorage.setItem('codeSnippets', JSON.stringify(programTools.savedSnippets));
+        
+        // Clear form
+        document.getElementById('snippetTitle').value = '';
+        document.getElementById('snippetCode').value = '';
+        document.getElementById('snippetDescription').value = '';
+        
+        // Refresh display
+        programTools.displaySavedSnippets();
+        
+        alert('Kod berjaya disimpan!');
+    }
+
+    copySnippet(id) {
+        const snippet = programTools.savedSnippets.find(s => s.id === id);
+        if (snippet) {
+            navigator.clipboard.writeText(snippet.code).then(() => {
+                alert('Kod telah disalin ke clipboard!');
+            }).catch(() => {
+                alert('Gagal menyalin kod');
+            });
+        }
+    }
+
+    deleteSnippet(id) {
+        if (confirm('Adakah anda pasti mahu memadam kod ini?')) {
+            programTools.savedSnippets = programTools.savedSnippets.filter(s => s.id !== id);
+            localStorage.setItem('codeSnippets', JSON.stringify(programTools.savedSnippets));
+            programTools.displaySavedSnippets();
+            alert('Kod telah dipadam');
+        }
+    }
+}
+
+// Global instances
+const programTools = new ProgramToolsManager();
+const culinaryTools = new CulinaryTools();
+const electricalTools = new ElectricalTools();
+const computerTools = new ComputerTools();
+
+// F&B Management Tools
+class FnBTools {
+    constructor() {
+        this.savedMenuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+    }
+
+    addCostIngredient() {
+        const list = document.getElementById('costIngredientList');
+        const newRow = document.createElement('div');
+        newRow.className = 'cost-ingredient-row';
+        newRow.innerHTML = `
+            <input type="text" placeholder="Nama bahan" class="cost-ingredient-name">
+            <input type="number" placeholder="Kuantiti" class="cost-ingredient-qty" step="0.1">
+            <input type="number" placeholder="Kos per unit (RM)" class="cost-ingredient-price" step="0.01">
+            <button type="button" onclick="fnbTools.removeCostIngredient(this)" class="btn remove">×</button>
+        `;
+        list.appendChild(newRow);
+    }
+
+    removeCostIngredient(button) {
+        const rows = document.querySelectorAll('.cost-ingredient-row');
+        if (rows.length > 1) {
+            button.parentElement.remove();
+        }
+    }
+
+    calculateMenuCost() {
+        const menuItem = document.getElementById('menuItemName').value;
+        const sellingPrice = parseFloat(document.getElementById('sellingPrice').value);
+        const laborPercent = parseFloat(document.getElementById('laborCost').value);
+        const overheadPercent = parseFloat(document.getElementById('overheadCost').value);
+
+        if (!menuItem || !sellingPrice) {
+            alert('Sila masukkan nama item dan harga jual');
+            return;
+        }
+
+        // Calculate ingredient costs
+        const rows = document.querySelectorAll('.cost-ingredient-row');
+        let totalIngredientCost = 0;
+        let ingredientDetails = [];
+
+        rows.forEach(row => {
+            const name = row.querySelector('.cost-ingredient-name').value;
+            const qty = parseFloat(row.querySelector('.cost-ingredient-qty').value);
+            const price = parseFloat(row.querySelector('.cost-ingredient-price').value);
+
+            if (name && qty && price) {
+                const cost = qty * price;
+                totalIngredientCost += cost;
+                ingredientDetails.push({ name, qty, price, cost });
+            }
+        });
+
+        // Calculate other costs
+        const laborCost = (totalIngredientCost * laborPercent) / 100;
+        const overheadCost = (totalIngredientCost * overheadPercent) / 100;
+        const totalCost = totalIngredientCost + laborCost + overheadCost;
+        const profit = sellingPrice - totalCost;
+        const profitMargin = ((profit / sellingPrice) * 100);
+
+        this.displayCostResults({
+            menuItem,
+            sellingPrice,
+            totalIngredientCost,
+            laborCost,
+            overheadCost,
+            totalCost,
+            profit,
+            profitMargin,
+            ingredientDetails
+        });
+    }
+
+    displayCostResults(data) {
+        const resultContainer = document.getElementById('costResults');
+        
+        resultContainer.innerHTML = `
+            <h4>Analisis Kos: ${data.menuItem}</h4>
+            <div class="cost-breakdown">
+                <div class="cost-item">
+                    <span>Kos Bahan-bahan</span>
+                    <span>RM ${data.totalIngredientCost.toFixed(2)}</span>
+                </div>
+                <div class="cost-item">
+                    <span>Kos Buruh (${document.getElementById('laborCost').value}%)</span>
+                    <span>RM ${data.laborCost.toFixed(2)}</span>
+                </div>
+                <div class="cost-item">
+                    <span>Kos Overhead (${document.getElementById('overheadCost').value}%)</span>
+                    <span>RM ${data.overheadCost.toFixed(2)}</span>
+                </div>
+                <div class="cost-item total">
+                    <span>Jumlah Kos</span>
+                    <span>RM ${data.totalCost.toFixed(2)}</span>
+                </div>
+                <div class="cost-item">
+                    <span>Harga Jual</span>
+                    <span>RM ${data.sellingPrice.toFixed(2)}</span>
+                </div>
+                <div class="cost-item ${data.profit >= 0 ? 'profit' : 'loss'}">
+                    <span>${data.profit >= 0 ? 'Keuntungan' : 'Kerugian'}</span>
+                    <span>RM ${Math.abs(data.profit).toFixed(2)} (${data.profitMargin.toFixed(1)}%)</span>
+                </div>
+            </div>
+            <div class="ingredient-breakdown">
+                <h5>Pecahan Kos Bahan:</h5>
+                ${data.ingredientDetails.map(item => `
+                    <div class="cost-item">
+                        <span>${item.name} (${item.qty} unit @ RM${item.price})</span>
+                        <span>RM ${item.cost.toFixed(2)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        resultContainer.style.display = 'block';
+    }
+
+    addMenuItem() {
+        const category = document.getElementById('menuCategory').value;
+        const season = document.getElementById('menuSeason').value;
+        const title = document.getElementById('menuItemTitle').value;
+        const price = parseFloat(document.getElementById('menuPrice').value);
+        const prepTime = parseInt(document.getElementById('menuPrepTime').value);
+        const description = document.getElementById('menuDescription').value;
+        
+        // Get selected allergens
+        const allergenInputs = document.querySelectorAll('.allergen-checkboxes input:checked');
+        const allergens = Array.from(allergenInputs).map(input => input.value);
+
+        if (!title || !price) {
+            alert('Sila masukkan nama menu dan harga');
+            return;
+        }
+
+        const menuItem = {
+            id: Date.now().toString(),
+            category,
+            season,
+            title,
+            price,
+            prepTime,
+            description,
+            allergens,
+            created: new Date().toISOString()
+        };
+
+        this.savedMenuItems.push(menuItem);
+        localStorage.setItem('menuItems', JSON.stringify(this.savedMenuItems));
+        
+        // Clear form
+        document.getElementById('menuItemTitle').value = '';
+        document.getElementById('menuPrice').value = '';
+        document.getElementById('menuPrepTime').value = '';
+        document.getElementById('menuDescription').value = '';
+        document.querySelectorAll('.allergen-checkboxes input').forEach(cb => cb.checked = false);
+        
+        this.displaySavedMenuItems();
+        alert('Item menu berjaya ditambah!');
+    }
+
+    displaySavedMenuItems() {
+        const container = document.getElementById('savedMenuItems');
+        if (!container) return;
+
+        if (this.savedMenuItems.length === 0) {
+            container.innerHTML = '<p>Tiada item menu tersimpan. Tambah item pertama anda!</p>';
+            return;
+        }
+
+        container.innerHTML = this.savedMenuItems.map(item => `
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <span class="menu-item-title">${item.title}</span>
+                    <span class="menu-item-price">RM ${item.price.toFixed(2)}</span>
+                </div>
+                <div class="menu-item-content">
+                    <div class="menu-item-details">
+                        <div class="menu-detail">
+                            <strong>Kategori:</strong><br>${this.getCategoryName(item.category)}
+                        </div>
+                        <div class="menu-detail">
+                            <strong>Musim:</strong><br>${this.getSeasonName(item.season)}
+                        </div>
+                        <div class="menu-detail">
+                            <strong>Masa:</strong><br>${item.prepTime} minit
+                        </div>
+                    </div>
+                    ${item.description ? `<p><strong>Penerangan:</strong> ${item.description}</p>` : ''}
+                    ${item.allergens.length > 0 ? `
+                        <div class="allergen-tags">
+                            ${item.allergens.map(allergen => `<span class="allergen-tag">${this.getAllergenName(allergen)}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="menu-item-actions" style="margin-top: 1rem;">
+                        <button class="btn danger" onclick="fnbTools.deleteMenuItem('${item.id}')">
+                            <i class="fas fa-trash"></i> Padam
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    getCategoryName(category) {
+        const categories = {
+            'appetizer': 'Pembuka Selera',
+            'main': 'Hidangan Utama',
+            'dessert': 'Pencuci Mulut',
+            'beverage': 'Minuman',
+            'special': 'Menu Istimewa'
+        };
+        return categories[category] || category;
+    }
+
+    getSeasonName(season) {
+        const seasons = {
+            'all': 'Sepanjang Tahun',
+            'ramadan': 'Bulan Ramadan',
+            'festive': 'Musim Perayaan',
+            'summer': 'Musim Panas',
+            'winter': 'Musim Sejuk'
+        };
+        return seasons[season] || season;
+    }
+
+    getAllergenName(allergen) {
+        const allergens = {
+            'dairy': 'Tenusu',
+            'nuts': 'Kacang',
+            'seafood': 'Makanan Laut',
+            'gluten': 'Gluten',
+            'spicy': 'Pedas'
+        };
+        return allergens[allergen] || allergen;
+    }
+
+    deleteMenuItem(id) {
+        if (confirm('Adakah anda pasti mahu memadam item menu ini?')) {
+            this.savedMenuItems = this.savedMenuItems.filter(item => item.id !== id);
+            localStorage.setItem('menuItems', JSON.stringify(this.savedMenuItems));
+            this.displaySavedMenuItems();
+            alert('Item menu telah dipadam');
+        }
+    }
+}
+
+// Administrative Management Tools  
+class AdminTools {
+    constructor() {
+        this.savedMeetings = JSON.parse(localStorage.getItem('meetings') || '[]');
+        this.documentTemplates = {
+            business_letter: `[HEADER SYARIKAT]
+{companyName}
+
+Tarikh: {date}
+
+Kepada,
+{recipient}
+
+Tuan/Puan,
+
+SUBJEK: {subject}
+
+{content}
+
+Sekian, terima kasih.
+
+Yang benar,
+
+{senderName}
+{senderPosition}`,
+            
+            memo: `MEMORANDUM
+
+KEPADA: Semua Kakitangan
+DARIPADA: {senderName}, {senderPosition}  
+TARIKH: {date}
+SUBJEK: {subject}
+
+{content}
+
+{senderName}
+{senderPosition}`,
+            
+            meeting_minutes: `MINIT MESYUARAT
+{subject}
+
+Tarikh: {date}
+Masa: {time}
+Tempat: {location}
+
+KEHADIRAN:
+{participants}
+
+AGENDA:
+{content}
+
+KEPUTUSAN:
+[Sila isi keputusan yang dicapai]
+
+TINDAKAN SUSULAN:
+[Sila isi tindakan yang perlu diambil]
+
+Mesyuarat berakhir pada {endTime}.
+
+Disediakan oleh,
+{senderName}
+{senderPosition}`,
+            
+            report: `LAPORAN {subject}
+
+Disediakan oleh: {senderName}
+Jawatan: {senderPosition}
+Tarikh: {date}
+
+1. PENGENALAN
+{content}
+
+2. OBJEKTIF
+[Sila isi objektif laporan]
+
+3. METODOLOGI
+[Sila isi kaedah yang digunakan]
+
+4. DAPATAN
+[Sila isi dapatan utama]
+
+5. CADANGAN
+[Sila isi cadangan]
+
+6. KESIMPULAN
+[Sila isi kesimpulan]
+
+Disediakan oleh,
+{senderName}
+{senderPosition}`,
+            
+            invoice: `INVOIS
+
+{companyName}
+Tarikh: {date}
+No. Invois: INV-{invoiceNumber}
+
+Bil Kepada:
+{recipient}
+
+BUTIRAN:
+{content}
+
+Jumlah Keseluruhan: RM {total}
+
+Terma Pembayaran: 30 hari
+
+{senderName}
+{senderPosition}`
+        };
+    }
+
+    loadTemplate(templateType) {
+        const form = document.getElementById('templateForm');
+        const preview = document.getElementById('documentPreview');
+        
+        if (templateType) {
+            form.style.display = 'block';
+            preview.style.display = 'none';
+        } else {
+            form.style.display = 'none';
+            preview.style.display = 'none';
+        }
+    }
+
+    generateDocument() {
+        const templateType = document.getElementById('templateType').value;
+        const companyName = document.getElementById('companyName').value || 'Breyer State College';
+        const senderName = document.getElementById('senderName').value || '[Nama Penghantar]';
+        const senderPosition = document.getElementById('senderPosition').value || '[Jawatan]';
+        const subject = document.getElementById('documentSubject').value || '[Subjek]';
+        const content = document.getElementById('documentContent').value || '[Kandungan]';
+
+        if (!templateType) {
+            alert('Sila pilih jenis templat');
+            return;
+        }
+
+        let template = this.documentTemplates[templateType];
+        const today = new Date().toLocaleDateString('ms-MY');
+        const invoiceNumber = Date.now().toString().slice(-6);
+
+        // Replace placeholders
+        const documentContent = template
+            .replace(/{companyName}/g, companyName)
+            .replace(/{senderName}/g, senderName)
+            .replace(/{senderPosition}/g, senderPosition)
+            .replace(/{subject}/g, subject)
+            .replace(/{content}/g, content)
+            .replace(/{date}/g, today)
+            .replace(/{invoiceNumber}/g, invoiceNumber)
+            .replace(/{recipient}/g, '[Nama Penerima]')
+            .replace(/{time}/g, '[Masa Mesyuarat]')
+            .replace(/{location}/g, '[Lokasi]')
+            .replace(/{participants}/g, '[Senarai Peserta]')
+            .replace(/{endTime}/g, '[Masa Tamat]')
+            .replace(/{total}/g, '[Jumlah]');
+
+        this.displayDocument(documentContent);
+    }
+
+    displayDocument(content) {
+        const preview = document.getElementById('documentPreview');
+        const output = document.getElementById('documentOutput');
+        
+        output.innerHTML = content;
+        preview.style.display = 'block';
+        
+        // Scroll to preview
+        preview.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    copyDocument() {
+        const content = document.getElementById('documentOutput').textContent;
+        navigator.clipboard.writeText(content).then(() => {
+            alert('Dokumen telah disalin ke clipboard!');
+        }).catch(() => {
+            alert('Gagal menyalin dokumen');
+        });
+    }
+
+    printDocument() {
+        const content = document.getElementById('documentOutput').innerHTML;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Dokumen - ${document.getElementById('documentSubject').value}</title>
+                    <style>
+                        body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 2cm; }
+                        .document-content { white-space: pre-wrap; }
+                    </style>
+                </head>
+                <body>
+                    <div class="document-content">${content}</div>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    addParticipant() {
+        const list = document.getElementById('participantList');
+        const newRow = document.createElement('div');
+        newRow.className = 'participant-row';
+        newRow.innerHTML = `
+            <input type="text" placeholder="Nama peserta" class="participant-name">
+            <input type="email" placeholder="Email" class="participant-email">
+            <select class="participant-role">
+                <option value="attendee">Peserta</option>
+                <option value="organizer">Penganjur</option>
+                <option value="presenter">Pembentang</option>
+            </select>
+            <button type="button" onclick="adminTools.removeParticipant(this)" class="btn remove">×</button>
+        `;
+        list.appendChild(newRow);
+    }
+
+    removeParticipant(button) {
+        const rows = document.querySelectorAll('.participant-row');
+        if (rows.length > 1) {
+            button.parentElement.remove();
+        }
+    }
+
+    createMeeting() {
+        const title = document.getElementById('meetingTitle').value;
+        const dateTime = document.getElementById('meetingDate').value;
+        const location = document.getElementById('meetingLocation').value;
+        const duration = parseInt(document.getElementById('meetingDuration').value);
+        const agenda = document.getElementById('meetingAgenda').value;
+
+        if (!title || !dateTime || !location) {
+            alert('Sila lengkapkan maklumat mesyuarat');
+            return;
+        }
+
+        // Get participants
+        const participantRows = document.querySelectorAll('.participant-row');
+        const participants = [];
+        
+        participantRows.forEach(row => {
+            const name = row.querySelector('.participant-name').value;
+            const email = row.querySelector('.participant-email').value;
+            const role = row.querySelector('.participant-role').value;
+            
+            if (name) {
+                participants.push({ name, email, role });
+            }
+        });
+
+        const meeting = {
+            id: Date.now().toString(),
+            title,
+            dateTime: new Date(dateTime),
+            location,
+            duration,
+            agenda,
+            participants,
+            created: new Date().toISOString()
+        };
+
+        this.savedMeetings.push(meeting);
+        localStorage.setItem('meetings', JSON.stringify(this.savedMeetings));
+        
+        this.displayMeetingResults(meeting);
+        alert('Mesyuarat berjaya dijadualkan!');
+    }
+
+    displayMeetingResults(meeting) {
+        const resultContainer = document.getElementById('meetingResults');
+        const startTime = new Date(meeting.dateTime);
+        const endTime = new Date(startTime.getTime() + (meeting.duration * 60000));
+        
+        resultContainer.innerHTML = `
+            <h4>Mesyuarat Dijadualkan</h4>
+            <div class="meeting-summary">
+                <h5>${meeting.title}</h5>
+                <div class="meeting-details">
+                    <div class="meeting-detail">
+                        <strong>Tarikh & Masa:</strong><br>
+                        ${startTime.toLocaleString('ms-MY')}
+                    </div>
+                    <div class="meeting-detail">
+                        <strong>Lokasi:</strong><br>
+                        ${meeting.location}
+                    </div>
+                    <div class="meeting-detail">
+                        <strong>Tempoh:</strong><br>
+                        ${meeting.duration} minit
+                    </div>
+                    <div class="meeting-detail">
+                        <strong>Masa Tamat:</strong><br>
+                        ${endTime.toLocaleString('ms-MY')}
+                    </div>
+                </div>
+                <div class="participant-summary">
+                    <strong>Peserta (${meeting.participants.length}):</strong>
+                    ${meeting.participants.map(p => `
+                        <div class="participant-item">
+                            <span>${p.name} ${p.email ? `(${p.email})` : ''}</span>
+                            <span class="participant-role-badge ${p.role}">${this.getRoleName(p.role)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                ${meeting.agenda ? `
+                    <div style="margin-top: 1rem;">
+                        <strong>Agenda:</strong>
+                        <pre style="background: #f8f9fa; padding: 1rem; border-radius: 4px; white-space: pre-wrap;">${meeting.agenda}</pre>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        resultContainer.style.display = 'block';
+    }
+
+    getRoleName(role) {
+        const roles = {
+            'attendee': 'Peserta',
+            'organizer': 'Penganjur', 
+            'presenter': 'Pembentang'
+        };
+        return roles[role] || role;
+    }
+}
+
+// Update global instances
+const fnbTools = new FnBTools();
+const adminTools = new AdminTools();

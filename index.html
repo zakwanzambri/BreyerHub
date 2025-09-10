@@ -47,6 +47,7 @@
                 <li><a href="#assignments" class="nav-link" data-section="assignments"><i class="fas fa-tasks"></i> Tugasan</a></li>
                 <li><a href="#grades" class="nav-link" data-section="grades"><i class="fas fa-chart-bar"></i> Gred</a></li>
                 <li><a href="#attendance" class="nav-link" data-section="attendance"><i class="fas fa-user-check"></i> Kehadiran</a></li>
+                <li><a href="#program-tools" class="nav-link" data-section="program-tools"><i class="fas fa-tools"></i> Alat Program</a></li>
                 <li><a href="#analytics" class="nav-link" data-section="analytics"><i class="fas fa-chart-line"></i> Analitik</a></li>
                 <li><a href="#goals" class="nav-link" data-section="goals"><i class="fas fa-bullseye"></i> Matlamat</a></li>
                 <li><a href="#timer" class="nav-link" data-section="timer"><i class="fas fa-clock"></i> Study Timer</a></li>
@@ -484,6 +485,34 @@
                             <span class="stat-label">Masa Rehat</span>
                             <span class="stat-value" id="total-break-time">0 minit</span>
                         </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Produktiviti</span>
+                            <span class="stat-value" id="productivity-score">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Streak Hari</span>
+                            <span class="stat-value" id="daily-streak">0</span>
+                        </div>
+                    </div>
+
+                    <div class="timer-insights">
+                        <h3>📊 Analisis Prestasi</h3>
+                        <div id="timer-insights-content" class="insights-content">
+                            <div class="insight-item">
+                                <i class="fas fa-clock text-primary"></i>
+                                <span>Mulakan sesi pertama untuk melihat analisis!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="smart-recommendations">
+                        <h3>🧠 Cadangan Pintar</h3>
+                        <div id="smart-recommendations-content" class="recommendations-content">
+                            <div class="recommendation-item">
+                                <i class="fas fa-lightbulb text-warning"></i>
+                                <span>Selesaikan beberapa sesi untuk mendapat cadangan peribadi</span>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="timer-tips">
@@ -872,6 +901,469 @@
                             <i class="fas fa-tasks"></i>
                             <h4>Tiada Tugasan</h4>
                             <p>Tambah tugasan pertama anda untuk mula penjejakan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Program-Specific Tools Section -->
+        <section id="program-tools" class="main-section">
+            <div class="container">
+                <h2><i class="fas fa-tools"></i> Alat Khusus Program</h2>
+                
+                <!-- Program Selector -->
+                <div class="tracker-card">
+                    <h3>Pilih Program Anda</h3>
+                    <div class="program-selector">
+                        <select id="programSelect" onchange="programTools.switchProgram(this.value)">
+                            <option value="">Pilih Program Diploma</option>
+                            <option value="culinary">Diploma Seni Kulinari</option>
+                            <option value="computer">Diploma Sistem Komputer</option>
+                            <option value="electrical">Diploma Pendawaian & Penyelenggaraan Elektrik</option>
+                            <option value="fnb">Diploma Pengurusan Makanan & Minuman</option>
+                            <option value="admin">Diploma Pengurusan Pentadbiran</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tools Container -->
+                <div class="tools-container" id="toolsContainer">
+                    <div class="tools-placeholder">
+                        <i class="fas fa-tools"></i>
+                        <h4>Pilih Program untuk Mengakses Alat Khusus</h4>
+                        <p>Setiap program mempunyai set alat profesional yang direka khusus untuk membantu pembelajaran dan kerja amali anda.</p>
+                    </div>
+                </div>
+
+                <!-- Culinary Tools -->
+                <div class="program-tools" id="culinaryTools" style="display: none;">
+                    <!-- Recipe Calculator -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-calculator"></i> Kalkulator Resipi</h3>
+                        <div class="tool-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="originalServings">Sajian Asal</label>
+                                    <input type="number" id="originalServings" value="4" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="targetServings">Sajian Sasaran</label>
+                                    <input type="number" id="targetServings" value="8" min="1">
+                                </div>
+                            </div>
+                            <div class="recipe-ingredients">
+                                <h4>Bahan-bahan</h4>
+                                <div class="ingredient-list" id="ingredientList">
+                                    <div class="ingredient-row">
+                                        <input type="text" placeholder="Nama bahan" class="ingredient-name">
+                                        <input type="number" placeholder="Kuantiti" class="ingredient-amount" step="0.1">
+                                        <select class="ingredient-unit">
+                                            <option value="g">gram</option>
+                                            <option value="kg">kilogram</option>
+                                            <option value="ml">mililiter</option>
+                                            <option value="l">liter</option>
+                                            <option value="cup">cawan</option>
+                                            <option value="tbsp">sudu besar</option>
+                                            <option value="tsp">sudu teh</option>
+                                        </select>
+                                        <button type="button" onclick="culinaryTools.removeIngredient(this)" class="btn remove">×</button>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="culinaryTools.addIngredient()" class="btn secondary">
+                                    <i class="fas fa-plus"></i> Tambah Bahan
+                                </button>
+                                <button type="button" onclick="culinaryTools.calculateRecipe()" class="btn primary">
+                                    <i class="fas fa-calculator"></i> Kira Resipi
+                                </button>
+                            </div>
+                            <div class="recipe-results" id="recipeResults" style="display: none;">
+                                <h4>Hasil Pengiraan</h4>
+                                <div class="results-content" id="resultsContent"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unit Converter -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-exchange-alt"></i> Penukar Unit</h3>
+                        <div class="tool-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="convertValue">Nilai</label>
+                                    <input type="number" id="convertValue" step="0.1" placeholder="Masukkan nilai">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fromUnit">Dari</label>
+                                    <select id="fromUnit">
+                                        <option value="cup">Cawan</option>
+                                        <option value="tbsp">Sudu Besar</option>
+                                        <option value="tsp">Sudu Teh</option>
+                                        <option value="ml">Mililiter</option>
+                                        <option value="l">Liter</option>
+                                        <option value="g">Gram</option>
+                                        <option value="kg">Kilogram</option>
+                                        <option value="oz">Ons</option>
+                                        <option value="lb">Paun</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="toUnit">Kepada</label>
+                                    <select id="toUnit">
+                                        <option value="ml">Mililiter</option>
+                                        <option value="cup">Cawan</option>
+                                        <option value="tbsp">Sudu Besar</option>
+                                        <option value="tsp">Sudu Teh</option>
+                                        <option value="l">Liter</option>
+                                        <option value="g">Gram</option>
+                                        <option value="kg">Kilogram</option>
+                                        <option value="oz">Ons</option>
+                                        <option value="lb">Paun</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button onclick="culinaryTools.convertUnits()" class="btn primary">
+                                <i class="fas fa-exchange-alt"></i> Tukar Unit
+                            </button>
+                            <div class="conversion-result" id="conversionResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Electrical Tools -->
+                <div class="program-tools" id="electricalTools" style="display: none;">
+                    <!-- Ohm's Law Calculator -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-bolt"></i> Kalkulator Hukum Ohm</h3>
+                        <div class="tool-content">
+                            <div class="ohms-law-diagram">
+                                <div class="formula-display">
+                                    <h4>V = I × R</h4>
+                                    <p>Voltan = Arus × Rintangan</p>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="voltage">Voltan (V)</label>
+                                    <input type="number" id="voltage" step="0.1" placeholder="Volt">
+                                </div>
+                                <div class="form-group">
+                                    <label for="current">Arus (A)</label>
+                                    <input type="number" id="current" step="0.01" placeholder="Ampere">
+                                </div>
+                                <div class="form-group">
+                                    <label for="resistance">Rintangan (Ω)</label>
+                                    <input type="number" id="resistance" step="0.1" placeholder="Ohm">
+                                </div>
+                            </div>
+                            <div class="calculator-buttons">
+                                <button onclick="electricalTools.calculateVoltage()" class="btn primary">Kira Voltan</button>
+                                <button onclick="electricalTools.calculateCurrent()" class="btn primary">Kira Arus</button>
+                                <button onclick="electricalTools.calculateResistance()" class="btn primary">Kira Rintangan</button>
+                                <button onclick="electricalTools.clearCalculator()" class="btn secondary">Padam</button>
+                            </div>
+                            <div class="calculation-result" id="ohmsResult"></div>
+                        </div>
+                    </div>
+
+                    <!-- Power Calculator -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-lightning-bolt"></i> Kalkulator Kuasa</h3>
+                        <div class="tool-content">
+                            <div class="power-formulas">
+                                <div class="formula-display">
+                                    <h4>P = V × I = I² × R = V² / R</h4>
+                                    <p>Kuasa = Voltan × Arus</p>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="powerVoltage">Voltan (V)</label>
+                                    <input type="number" id="powerVoltage" step="0.1" placeholder="Volt">
+                                </div>
+                                <div class="form-group">
+                                    <label for="powerCurrent">Arus (A)</label>
+                                    <input type="number" id="powerCurrent" step="0.01" placeholder="Ampere">
+                                </div>
+                                <div class="form-group">
+                                    <label for="powerResistance">Rintangan (Ω)</label>
+                                    <input type="number" id="powerResistance" step="0.1" placeholder="Ohm">
+                                </div>
+                            </div>
+                            <button onclick="electricalTools.calculatePower()" class="btn primary">
+                                <i class="fas fa-calculator"></i> Kira Kuasa
+                            </button>
+                            <div class="power-result" id="powerResult"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Computer Tools -->
+                <div class="program-tools" id="computerTools" style="display: none;">
+                    <!-- Code Snippet Manager -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-code"></i> Pengurus Kod</h3>
+                        <div class="tool-content">
+                            <div class="code-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="snippetTitle">Tajuk Kod</label>
+                                        <input type="text" id="snippetTitle" placeholder="Nama snippet kod">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="snippetLanguage">Bahasa</label>
+                                        <select id="snippetLanguage">
+                                            <option value="javascript">JavaScript</option>
+                                            <option value="python">Python</option>
+                                            <option value="java">Java</option>
+                                            <option value="html">HTML</option>
+                                            <option value="css">CSS</option>
+                                            <option value="sql">SQL</option>
+                                            <option value="php">PHP</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="snippetCode">Kod</label>
+                                    <textarea id="snippetCode" rows="8" placeholder="Masukkan kod anda di sini..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="snippetDescription">Penerangan</label>
+                                    <textarea id="snippetDescription" rows="3" placeholder="Penerangan fungsi kod..."></textarea>
+                                </div>
+                                <button onclick="computerTools.saveSnippet()" class="btn primary">
+                                    <i class="fas fa-save"></i> Simpan Kod
+                                </button>
+                            </div>
+                            <div class="snippets-list" id="snippetsList">
+                                <h4>Kod Tersimpan</h4>
+                                <div id="savedSnippets"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- F&B Management Tools -->
+                <div class="program-tools" id="fnbTools" style="display: none;">
+                    <!-- Cost Calculator -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-calculator"></i> Kalkulator Kos</h3>
+                        <div class="tool-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="menuItemName">Nama Item Menu</label>
+                                    <input type="text" id="menuItemName" placeholder="Contoh: Nasi Lemak Special">
+                                </div>
+                                <div class="form-group">
+                                    <label for="sellingPrice">Harga Jual (RM)</label>
+                                    <input type="number" id="sellingPrice" step="0.01" placeholder="15.00">
+                                </div>
+                            </div>
+                            <div class="ingredients-cost">
+                                <h4>Kos Bahan-bahan</h4>
+                                <div class="cost-ingredient-list" id="costIngredientList">
+                                    <div class="cost-ingredient-row">
+                                        <input type="text" placeholder="Nama bahan" class="cost-ingredient-name">
+                                        <input type="number" placeholder="Kuantiti" class="cost-ingredient-qty" step="0.1">
+                                        <input type="number" placeholder="Kos per unit (RM)" class="cost-ingredient-price" step="0.01">
+                                        <button type="button" onclick="fnbTools.removeCostIngredient(this)" class="btn remove">×</button>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="fnbTools.addCostIngredient()" class="btn secondary">
+                                    <i class="fas fa-plus"></i> Tambah Bahan
+                                </button>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="laborCost">Kos Buruh (%)</label>
+                                    <input type="number" id="laborCost" value="30" min="0" max="100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="overheadCost">Kos Overhead (%)</label>
+                                    <input type="number" id="overheadCost" value="15" min="0" max="100">
+                                </div>
+                            </div>
+                            <button onclick="fnbTools.calculateMenuCost()" class="btn primary">
+                                <i class="fas fa-calculator"></i> Kira Kos & Keuntungan
+                            </button>
+                            <div class="cost-results" id="costResults" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Planning Tool -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-clipboard-list"></i> Perancang Menu</h3>
+                        <div class="tool-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="menuCategory">Kategori Menu</label>
+                                    <select id="menuCategory">
+                                        <option value="appetizer">Pembuka Selera</option>
+                                        <option value="main">Hidangan Utama</option>
+                                        <option value="dessert">Pencuci Mulut</option>
+                                        <option value="beverage">Minuman</option>
+                                        <option value="special">Menu Istimewa</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="menuSeason">Musim</label>
+                                    <select id="menuSeason">
+                                        <option value="all">Sepanjang Tahun</option>
+                                        <option value="ramadan">Bulan Ramadan</option>
+                                        <option value="festive">Musim Perayaan</option>
+                                        <option value="summer">Musim Panas</option>
+                                        <option value="winter">Musim Sejuk</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="menuItemTitle">Nama Menu</label>
+                                <input type="text" id="menuItemTitle" placeholder="Nama hidangan">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="menuPrice">Harga (RM)</label>
+                                    <input type="number" id="menuPrice" step="0.01" placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label for="menuPrepTime">Masa Penyediaan (minit)</label>
+                                    <input type="number" id="menuPrepTime" placeholder="15">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="menuDescription">Penerangan</label>
+                                <textarea id="menuDescription" rows="3" placeholder="Penerangan hidangan..."></textarea>
+                            </div>
+                            <div class="allergen-section">
+                                <label>Allergen (pilih yang berkenaan):</label>
+                                <div class="allergen-checkboxes">
+                                    <label><input type="checkbox" value="dairy"> Tenusu</label>
+                                    <label><input type="checkbox" value="nuts"> Kacang</label>
+                                    <label><input type="checkbox" value="seafood"> Makanan Laut</label>
+                                    <label><input type="checkbox" value="gluten"> Gluten</label>
+                                    <label><input type="checkbox" value="spicy"> Pedas</label>
+                                </div>
+                            </div>
+                            <button onclick="fnbTools.addMenuItem()" class="btn primary">
+                                <i class="fas fa-plus"></i> Tambah ke Menu
+                            </button>
+                            <div class="menu-display" id="menuDisplay">
+                                <h4>Menu Tersimpan</h4>
+                                <div id="savedMenuItems"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Administrative Management Tools -->
+                <div class="program-tools" id="adminTools" style="display: none;">
+                    <!-- Document Templates -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-file-alt"></i> Templat Dokumen</h3>
+                        <div class="tool-content">
+                            <div class="template-selector">
+                                <label for="templateType">Jenis Templat</label>
+                                <select id="templateType" onchange="adminTools.loadTemplate(this.value)">
+                                    <option value="">Pilih Templat</option>
+                                    <option value="business_letter">Surat Rasmi</option>
+                                    <option value="meeting_minutes">Minit Mesyuarat</option>
+                                    <option value="memo">Memo</option>
+                                    <option value="report">Laporan</option>
+                                    <option value="invoice">Invois</option>
+                                </select>
+                            </div>
+                            <div class="template-form" id="templateForm" style="display: none;">
+                                <div class="form-group">
+                                    <label for="companyName">Nama Syarikat/Organisasi</label>
+                                    <input type="text" id="companyName" placeholder="Breyer State College">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="senderName">Nama Penghantar</label>
+                                        <input type="text" id="senderName" placeholder="Nama anda">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="senderPosition">Jawatan</label>
+                                        <input type="text" id="senderPosition" placeholder="Jawatan anda">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="documentSubject">Subjek/Tajuk</label>
+                                    <input type="text" id="documentSubject" placeholder="Subjek dokumen">
+                                </div>
+                                <div class="form-group">
+                                    <label for="documentContent">Kandungan</label>
+                                    <textarea id="documentContent" rows="8" placeholder="Tulis kandungan dokumen di sini..."></textarea>
+                                </div>
+                                <button onclick="adminTools.generateDocument()" class="btn primary">
+                                    <i class="fas fa-file-alt"></i> Jana Dokumen
+                                </button>
+                            </div>
+                            <div class="document-preview" id="documentPreview" style="display: none;">
+                                <h4>Pratonton Dokumen</h4>
+                                <div class="document-content" id="documentOutput"></div>
+                                <div class="document-actions">
+                                    <button onclick="adminTools.copyDocument()" class="btn secondary">
+                                        <i class="fas fa-copy"></i> Salin
+                                    </button>
+                                    <button onclick="adminTools.printDocument()" class="btn secondary">
+                                        <i class="fas fa-print"></i> Cetak
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meeting Scheduler -->
+                    <div class="tracker-card tool-card">
+                        <h3><i class="fas fa-calendar-alt"></i> Penjadual Mesyuarat</h3>
+                        <div class="tool-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="meetingTitle">Tajuk Mesyuarat</label>
+                                    <input type="text" id="meetingTitle" placeholder="Mesyuarat Bulanan">
+                                </div>
+                                <div class="form-group">
+                                    <label for="meetingDate">Tarikh & Masa</label>
+                                    <input type="datetime-local" id="meetingDate">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="meetingLocation">Lokasi</label>
+                                    <input type="text" id="meetingLocation" placeholder="Bilik Mesyuarat A">
+                                </div>
+                                <div class="form-group">
+                                    <label for="meetingDuration">Tempoh (minit)</label>
+                                    <input type="number" id="meetingDuration" value="60" min="15" step="15">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="meetingAgenda">Agenda</label>
+                                <textarea id="meetingAgenda" rows="4" placeholder="1. Pembukaan&#10;2. Semakan minit lepas&#10;3. Perbincangan utama&#10;4. Penutup"></textarea>
+                            </div>
+                            <div class="participants-section">
+                                <label>Peserta</label>
+                                <div class="participant-list" id="participantList">
+                                    <div class="participant-row">
+                                        <input type="text" placeholder="Nama peserta" class="participant-name">
+                                        <input type="email" placeholder="Email" class="participant-email">
+                                        <select class="participant-role">
+                                            <option value="attendee">Peserta</option>
+                                            <option value="organizer">Penganjur</option>
+                                            <option value="presenter">Pembentang</option>
+                                        </select>
+                                        <button type="button" onclick="adminTools.removeParticipant(this)" class="btn remove">×</button>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="adminTools.addParticipant()" class="btn secondary">
+                                    <i class="fas fa-plus"></i> Tambah Peserta
+                                </button>
+                            </div>
+                            <button onclick="adminTools.createMeeting()" class="btn primary">
+                                <i class="fas fa-calendar-plus"></i> Jadualkan Mesyuarat
+                            </button>
+                            <div class="meeting-results" id="meetingResults" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
