@@ -20,6 +20,23 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.svg">
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-university"></i>
+                <h1>BreyerHub</h1>
+            </div>
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <p class="loading-text">Memuatkan portal anda...</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
     <header>
         <div class="container">
             <div class="header-content">
@@ -49,6 +66,7 @@
                 <li><a href="#attendance" class="nav-link" data-section="attendance"><i class="fas fa-user-check"></i> Kehadiran</a></li>
                 <li><a href="#program-tools" class="nav-link" data-section="program-tools"><i class="fas fa-tools"></i> Alat Program</a></li>
                 <li><a href="#analytics" class="nav-link" data-section="analytics"><i class="fas fa-chart-line"></i> Analitik</a></li>
+                <li><a href="#ai-features" class="nav-link" data-section="ai-features"><i class="fas fa-brain"></i> AI Pintar</a></li>
                 <li><a href="#goals" class="nav-link" data-section="goals"><i class="fas fa-bullseye"></i> Matlamat</a></li>
                 <li><a href="#timer" class="nav-link" data-section="timer"><i class="fas fa-clock"></i> Study Timer</a></li>
                 <li><a href="#calculator" class="nav-link" data-section="calculator"><i class="fas fa-calculator"></i> Kalkulator GPA</a></li>
@@ -312,6 +330,166 @@
                             <p>Aktiviti anda akan dipaparkan di sini</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Smart Features Section -->
+        <section id="ai-features" class="main-section">
+            <div class="container">
+                <h2><i class="fas fa-brain"></i> AI Pintar - Sistem Rekomendasi Cerdas</h2>
+                
+                <!-- Smart Study Planner -->
+                <div class="ai-card">
+                    <h3><i class="fas fa-calendar-check"></i> Perancang Kajian Pintar</h3>
+                    <p>Algoritma AI untuk mencadangkan jadual kajian optimum berdasarkan prestasi dan deadline anda.</p>
+                    
+                    <div class="study-planner-form">
+                        <div class="form-group">
+                            <label>Masa Kajian Harian (jam):</label>
+                            <input type="number" id="studyHours" min="1" max="12" value="4">
+                        </div>
+                        <div class="form-group">
+                            <label>Gaya Pembelajaran:</label>
+                            <select id="learningStyle">
+                                <option value="visual">Visual (gambar, carta)</option>
+                                <option value="auditory">Auditori (audio, perbincangan)</option>
+                                <option value="kinesthetic">Kinestetik (hands-on, praktikal)</option>
+                                <option value="reading">Membaca/Menulis</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Masa Terbaik Belajar:</label>
+                            <select id="preferredTime">
+                                <option value="morning">Pagi (6AM - 12PM)</option>
+                                <option value="afternoon">Petang (12PM - 6PM)</option>
+                                <option value="evening">Malam (6PM - 10PM)</option>
+                                <option value="night">Lewat Malam (10PM - 2AM)</option>
+                            </select>
+                        </div>
+                        <button onclick="aiFeatures.generateStudyPlan()" class="btn primary">
+                            <i class="fas fa-magic"></i> Jana Rancangan Kajian AI
+                        </button>
+                    </div>
+                    
+                    <div id="studyPlanResults" class="ai-results" style="display: none;"></div>
+                </div>
+
+                <!-- GPA Predictor -->
+                <div class="ai-card">
+                    <h3><i class="fas fa-chart-line"></i> Ramalan CGPA Pintar</h3>
+                    <p>Algoritma ramalan menggunakan analisis trend untuk meramalkan CGPA semester akan datang.</p>
+                    
+                    <div class="predictor-form">
+                        <div class="form-group">
+                            <label>Semester Semasa:</label>
+                            <select id="currentSemester">
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                                <option value="5">Semester 5</option>
+                                <option value="6">Semester 6</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target CGPA:</label>
+                            <input type="number" id="targetCGPA" min="0" max="4" step="0.01" value="3.5">
+                        </div>
+                        <button onclick="aiFeatures.predictGPA()" class="btn primary">
+                            <i class="fas fa-crystal-ball"></i> Ramal CGPA Masa Hadapan
+                        </button>
+                    </div>
+                    
+                    <div id="gpaPredictonResults" class="ai-results" style="display: none;"></div>
+                </div>
+
+                <!-- Smart Recipe Recommendations -->
+                <div class="ai-card">
+                    <h3><i class="fas fa-utensils"></i> Rekomendasi Resipi Pintar</h3>
+                    <p>Sistem rekomendasi untuk pelajar Culinary berdasarkan bahan-bahan yang ada.</p>
+                    
+                    <div class="recipe-recommender">
+                        <div class="form-group">
+                            <label>Bahan-bahan Yang Ada (pisahkan dengan koma):</label>
+                            <textarea id="availableIngredients" placeholder="cth: daging ayam, bawang, tomato, garam, lada hitam"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis Masakan:</label>
+                            <select id="cuisineType">
+                                <option value="any">Semua Jenis</option>
+                                <option value="malay">Masakan Melayu</option>
+                                <option value="chinese">Masakan Cina</option>
+                                <option value="indian">Masakan India</option>
+                                <option value="western">Masakan Barat</option>
+                                <option value="fusion">Fusion</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tahap Kesukaran:</label>
+                            <select id="difficultyLevel">
+                                <option value="beginner">Mudah (Pemula)</option>
+                                <option value="intermediate">Sederhana</option>
+                                <option value="advanced">Sukar (Mahir)</option>
+                            </select>
+                        </div>
+                        <button onclick="aiFeatures.recommendRecipes()" class="btn primary">
+                            <i class="fas fa-search"></i> Cari Resipi Yang Sesuai
+                        </button>
+                    </div>
+                    
+                    <div id="recipeRecommendations" class="ai-results" style="display: none;"></div>
+                </div>
+
+                <!-- Learning Analytics & Insights -->
+                <div class="ai-card">
+                    <h3><i class="fas fa-chart-pie"></i> Analitik Pembelajaran Pintar</h3>
+                    <p>Insight mendalam tentang pola pembelajaran dan cadangan penambahbaikan.</p>
+                    
+                    <div class="analytics-controls">
+                        <button onclick="aiFeatures.generateInsights()" class="btn primary">
+                            <i class="fas fa-brain"></i> Analisis Prestasi Saya
+                        </button>
+                        <button onclick="aiFeatures.getStudyRecommendations()" class="btn secondary">
+                            <i class="fas fa-lightbulb"></i> Dapatkan Tips Kajian
+                        </button>
+                    </div>
+                    
+                    <div id="learningInsights" class="ai-results" style="display: none;"></div>
+                </div>
+
+                <!-- Career Path Guidance -->
+                <div class="ai-card">
+                    <h3><i class="fas fa-road"></i> Panduan Kerjaya Pintar</h3>
+                    <p>Rekomendasi laluan kerjaya berdasarkan program, prestasi, dan trend industri.</p>
+                    
+                    <div class="career-form">
+                        <div class="form-group">
+                            <label>Program Pengajian:</label>
+                            <select id="studyProgram">
+                                <option value="culinary">Culinary Arts</option>
+                                <option value="computer">Computer System & Support</option>
+                                <option value="electrical">Electrical Technology</option>
+                                <option value="fnb">F&B Management</option>
+                                <option value="admin">Administrative Management</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Minat Kerjaya:</label>
+                            <select id="careerInterest">
+                                <option value="technical">Teknikal/Hands-on</option>
+                                <option value="management">Pengurusan/Leadership</option>
+                                <option value="creative">Kreatif/Inovasi</option>
+                                <option value="entrepreneurship">Keusahawanan</option>
+                                <option value="research">Penyelidikan/Akademik</option>
+                            </select>
+                        </div>
+                        <button onclick="aiFeatures.generateCareerGuidance()" class="btn primary">
+                            <i class="fas fa-compass"></i> Dapatkan Panduan Kerjaya
+                        </button>
+                    </div>
+                    
+                    <div id="careerGuidance" class="ai-results" style="display: none;"></div>
                 </div>
             </div>
         </section>

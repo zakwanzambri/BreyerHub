@@ -1,9 +1,18 @@
 // Navigation functionality
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize loading screen
+    initializeLoadingScreen();
+    
+    // Initialize animations
+    initializeAnimations();
+    
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.section, .main-section');
 
-    navLinks.forEach(link => {
+    navLinks.forEach((link, index) => {
+        // Add staggered animation delay for nav links
+        link.style.setProperty('--nav-index', index);
+        
         link.addEventListener('click', function(e) {
             e.preventDefault();
             
@@ -14,10 +23,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add active class to clicked nav link
             this.classList.add('active');
             
-            // Show corresponding section
+            // Show corresponding section with animation
             const targetSection = document.getElementById(this.dataset.section);
             if (targetSection) {
                 targetSection.classList.add('active');
+                animateElementEntrance(targetSection);
             }
         });
     });
@@ -320,6 +330,26 @@ function displayGPAResult(gpa, subjects, totalCredits) {
             </div>
         </div>
     `;
+    
+    // Add celebration effects
+    setTimeout(() => {
+        celebrateSuccess(resultDiv);
+        
+        let celebrationMessage = '';
+        if (gpa >= 3.67) {
+            celebrationMessage = '🎉 Cemerlang! GPA Anda luar biasa!';
+        } else if (gpa >= 3.00) {
+            celebrationMessage = '👏 Baik! Teruskan usaha anda!';
+        } else if (gpa >= 2.00) {
+            celebrationMessage = '💪 Memuaskan! Ada ruang untuk improvement!';
+        } else {
+            celebrationMessage = '📚 Teruskan berusaha! Anda boleh buat lebih baik!';
+        }
+        
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration(celebrationMessage);
+        }
+    }, 300);
 }
 
 // Notification system
@@ -4801,4 +4831,1307 @@ Terma Pembayaran: 30 hari
 
 // Update global instances
 const fnbTools = new FnBTools();
+
+// Animation Enhancement Functions
+function initializeAnimations() {
+    // Add animation classes to existing elements
+    addAnimationIndexes();
+    
+    // Add intersection observer for scroll animations
+    initializeScrollAnimations();
+    
+    // Add button click effects
+    initializeButtonEffects();
+    
+    // Add form interaction effects
+    initializeFormEffects();
+    
+    console.log('🎨 Animation system initialized!');
+}
+
+function addAnimationIndexes() {
+    // Add animation delays to cards
+    const cards = document.querySelectorAll('.overview-card');
+    cards.forEach((card, index) => {
+        card.style.setProperty('--card-index', index);
+    });
+    
+    // Add animation delays to tool cards
+    const toolCards = document.querySelectorAll('.tool-card');
+    toolCards.forEach((card, index) => {
+        card.style.setProperty('--tool-index', index);
+    });
+}
+
+function initializeScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Observe all major sections
+    const elementsToAnimate = document.querySelectorAll('.section, .tool-card, .overview-card');
+    elementsToAnimate.forEach(el => observer.observe(el));
+}
+
+function initializeButtonEffects() {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Create ripple effect
+            createRippleEffect(e, this);
+            
+            // Add loading state temporarily
+            if (!this.classList.contains('no-loading')) {
+                addLoadingState(this);
+            }
+        });
+    });
+}
+
+function initializeFormEffects() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.classList.add('focused');
+            animateLabel(this);
+        });
+        
+        input.addEventListener('blur', function() {
+            this.classList.remove('focused');
+        });
+        
+        input.addEventListener('change', function() {
+            if (this.value) {
+                this.classList.add('has-value');
+                showSuccessAnimation(this);
+            } else {
+                this.classList.remove('has-value');
+            }
+        });
+    });
+}
+
+function animateElementEntrance(element) {
+    element.style.opacity = '0';
+    element.style.transform = 'translateY(30px)';
+    
+    setTimeout(() => {
+        element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        element.style.opacity = '1';
+        element.style.transform = 'translateY(0)';
+    }, 50);
+}
+
+function createRippleEffect(event, button) {
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+    
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    ripple.classList.add('ripple');
+    
+    // Add ripple styles
+    ripple.style.position = 'absolute';
+    ripple.style.borderRadius = '50%';
+    ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+    ripple.style.transform = 'scale(0)';
+    ripple.style.animation = 'rippleEffect 0.6s linear';
+    ripple.style.pointerEvents = 'none';
+    
+    button.style.position = 'relative';
+    button.style.overflow = 'hidden';
+    button.appendChild(ripple);
+    
+    setTimeout(() => {
+        ripple.remove();
+    }, 600);
+}
+
+function addLoadingState(button) {
+    const originalText = button.textContent;
+    button.classList.add('loading');
+    
+    setTimeout(() => {
+        button.classList.remove('loading');
+        button.classList.add('success-flash');
+        
+        setTimeout(() => {
+            button.classList.remove('success-flash');
+        }, 800);
+    }, 1000);
+}
+
+function showSuccessAnimation(element) {
+    element.classList.add('success-flash');
+    setTimeout(() => {
+        element.classList.remove('success-flash');
+    }, 800);
+}
+
+function animateLabel(input) {
+    const label = input.previousElementSibling;
+    if (label && label.tagName === 'LABEL') {
+        label.style.animation = 'bounce 0.6s ease-out';
+        setTimeout(() => {
+            label.style.animation = '';
+        }, 600);
+    }
+}
+
+function celebrateSuccess(element) {
+    element.classList.add('celebrate');
+    setTimeout(() => {
+        element.classList.remove('celebrate');
+    }, 1000);
+}
+
+// Add ripple effect CSS
+const rippleStyles = document.createElement('style');
+rippleStyles.textContent = `
+    @keyframes rippleEffect {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    .animate-in {
+        animation: fadeInUp 0.8s ease-out !important;
+    }
+    
+    .focused {
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3) !important;
+    }
+    
+    .has-value {
+        border-color: var(--accent-color) !important;
+    }
+`;
+document.head.appendChild(rippleStyles);
+
+// Initialize celebration effects for achievements
+function triggerCelebration(message) {
+    const celebration = document.createElement('div');
+    celebration.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 2rem;
+        border-radius: 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        z-index: 10000;
+        animation: celebrate 1s ease-out;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    `;
+    celebration.textContent = message;
+    
+    document.body.appendChild(celebration);
+    
+    setTimeout(() => {
+        celebration.remove();
+    }, 2000);
+}
+
+console.log('🎉 Enhanced visual effects loaded!');
+
+// Loading Screen Functions
+function initializeLoadingScreen() {
+    // Simulate loading time
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingText = document.querySelector('.loading-text');
+    
+    const loadingMessages = [
+        'Memuatkan portal anda...',
+        'Menyediakan alat-alat canggih...',
+        'Menghubungkan sistem...',
+        'Hampir siap...',
+        'Selamat datang ke BreyerHub!'
+    ];
+    
+    let messageIndex = 0;
+    
+    // Change loading message every 500ms
+    const messageInterval = setInterval(() => {
+        if (messageIndex < loadingMessages.length - 1) {
+            messageIndex++;
+            loadingText.textContent = loadingMessages[messageIndex];
+            loadingText.style.animation = 'none';
+            setTimeout(() => {
+                loadingText.style.animation = 'fadeInUp 0.5s ease-out';
+            }, 50);
+        }
+    }, 500);
+    
+    // Hide loading screen after 2.5 seconds
+    setTimeout(() => {
+        clearInterval(messageInterval);
+        loadingScreen.classList.add('hidden');
+        
+        // Remove loading screen from DOM after transition
+        setTimeout(() => {
+            loadingScreen.remove();
+            
+            // Trigger welcome celebration
+            setTimeout(() => {
+                triggerCelebration('🎉 Selamat datang ke BreyerHub!');
+            }, 500);
+        }, 500);
+    }, 2500);
+}
+
+// Performance monitoring
+function trackPerformance() {
+    if ('performance' in window) {
+        window.addEventListener('load', () => {
+            const perfData = performance.timing;
+            const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+            console.log(`🚀 Page loaded in ${loadTime}ms`);
+            
+            if (loadTime > 3000) {
+                console.log('⚠️ Slow loading detected');
+            }
+        });
+    }
+}
+
+// Initialize performance tracking
+trackPerformance();
 const adminTools = new AdminTools();
+
+// AI Features System
+class AIFeatures {
+    constructor() {
+        this.studyPatterns = this.loadStudyPatterns();
+        this.recipeDatabase = this.initializeRecipeDatabase();
+        this.careerDatabase = this.initializeCareerDatabase();
+        console.log('🧠 AI Features System initialized!');
+    }
+
+    // Smart Study Plan Generator
+    generateStudyPlan() {
+        const studyHours = parseInt(document.getElementById('studyHours').value);
+        const learningStyle = document.getElementById('learningStyle').value;
+        const preferredTime = document.getElementById('preferredTime').value;
+        
+        // Get user's current courses from grades data
+        const courses = this.getUserCourses();
+        const assignments = this.getUpcomingAssignments();
+        
+        // AI Algorithm: Generate optimal study schedule
+        const studyPlan = this.calculateOptimalSchedule(studyHours, learningStyle, preferredTime, courses, assignments);
+        
+        this.displayStudyPlan(studyPlan);
+        
+        // Trigger celebration
+        setTimeout(() => {
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('🧠 Rancangan kajian AI telah dijana!');
+            }
+        }, 500);
+    }
+
+    calculateOptimalSchedule(hours, style, time, courses, assignments) {
+        const timeSlots = this.generateTimeSlots(time, hours);
+        const prioritySubjects = this.calculateSubjectPriority(courses, assignments);
+        
+        let schedule = [];
+        let currentHour = 0;
+        
+        // AI Logic: Distribute study time based on priority and learning style
+        for (const subject of prioritySubjects) {
+            if (currentHour >= hours) break;
+            
+            const studyDuration = Math.min(
+                Math.ceil(subject.priority * 2), // More time for higher priority
+                hours - currentHour
+            );
+            
+            const activity = this.getOptimalActivity(style, subject);
+            
+            schedule.push({
+                time: timeSlots[currentHour],
+                subject: subject.name,
+                duration: studyDuration,
+                activity: activity,
+                priority: subject.priority
+            });
+            
+            currentHour += studyDuration;
+        }
+        
+        return schedule;
+    }
+
+    generateTimeSlots(preferredTime, totalHours) {
+        const timeMap = {
+            'morning': ['08:00', '09:00', '10:00', '11:00', '12:00'],
+            'afternoon': ['13:00', '14:00', '15:00', '16:00', '17:00'],
+            'evening': ['18:00', '19:00', '20:00', '21:00', '22:00'],
+            'night': ['22:00', '23:00', '00:00', '01:00', '02:00']
+        };
+        
+        return timeMap[preferredTime] || timeMap['morning'];
+    }
+
+    calculateSubjectPriority(courses, assignments) {
+        const subjects = [];
+        
+        // Priority based on upcoming assignments and current performance
+        for (const course of courses) {
+            const upcomingAssignments = assignments.filter(a => 
+                a.subject.toLowerCase().includes(course.name.toLowerCase())
+            );
+            
+            let priority = 1;
+            
+            // Higher priority for subjects with assignments due soon
+            if (upcomingAssignments.length > 0) {
+                priority += upcomingAssignments.length * 0.5;
+            }
+            
+            // Higher priority for subjects with lower grades
+            if (course.grade < 3.0) {
+                priority += 1;
+            }
+            
+            subjects.push({
+                name: course.name,
+                priority: priority,
+                grade: course.grade
+            });
+        }
+        
+        // Sort by priority (highest first)
+        return subjects.sort((a, b) => b.priority - a.priority);
+    }
+
+    getOptimalActivity(learningStyle, subject) {
+        const activities = {
+            'visual': [
+                'Buat mind map dan diagram',
+                'Tonton video tutorial',
+                'Baca dengan highlight warna',
+                'Buat flashcards bergambar'
+            ],
+            'auditory': [
+                'Dengar podcast/audio',
+                'Belajar secara berkumpulan',
+                'Baca dengan suara',
+                'Rekod nota dan dengar semula'
+            ],
+            'kinesthetic': [
+                'Praktik hands-on',
+                'Tulis nota manual',
+                'Buat model/eksperimen',
+                'Belajar sambil berjalan'
+            ],
+            'reading': [
+                'Baca buku teks',
+                'Tulis ringkasan',
+                'Buat nota terperinci',
+                'Analisis artikel'
+            ]
+        };
+        
+        const styleActivities = activities[learningStyle] || activities['reading'];
+        return styleActivities[Math.floor(Math.random() * styleActivities.length)];
+    }
+
+    displayStudyPlan(schedule) {
+        const resultsDiv = document.getElementById('studyPlanResults');
+        
+        let html = `
+            <h4><i class="fas fa-magic"></i> Rancangan Kajian AI Anda</h4>
+            <p>Dijana berdasarkan analisis algoritma pembelajaran pintar:</p>
+        `;
+        
+        schedule.forEach((item, index) => {
+            html += `
+                <div class="study-plan-item" style="animation-delay: ${index * 0.1}s">
+                    <div class="study-plan-time">${item.time} - ${item.duration} jam</div>
+                    <div class="study-plan-subject">${item.subject}</div>
+                    <div class="study-plan-activity">${item.activity}</div>
+                    <div class="priority-indicator" style="color: ${item.priority > 2 ? '#e74c3c' : item.priority > 1.5 ? '#f39c12' : '#27ae60'}">
+                        Prioriti: ${item.priority > 2 ? 'Tinggi' : item.priority > 1.5 ? 'Sederhana' : 'Biasa'}
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+            <div style="margin-top: 1rem; padding: 1rem; background: #e8f5e8; border-radius: 8px;">
+                <strong>💡 Tips AI:</strong> Rancangan ini disesuaikan dengan gaya pembelajaran dan masa optimal anda. 
+                Ikuti jadual ini untuk hasil maksimum!
+            </div>
+        `;
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        resultsDiv.classList.add('show');
+    }
+
+    // Predictive GPA Forecasting
+    predictGPA() {
+        const currentSemester = parseInt(document.getElementById('currentSemester').value);
+        const targetCGPA = parseFloat(document.getElementById('targetCGPA').value);
+        
+        // Get historical grade data
+        const gradeHistory = this.getGradeHistory();
+        const currentGPA = this.calculateCurrentGPA(gradeHistory);
+        
+        // AI Prediction Algorithm
+        const prediction = this.calculateGPAPrediction(currentSemester, targetCGPA, gradeHistory);
+        
+        this.displayGPAPrediction(prediction);
+        
+        // Trigger celebration
+        setTimeout(() => {
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('🔮 Ramalan CGPA telah dijana!');
+            }
+        }, 500);
+    }
+
+    calculateGPAPrediction(semester, target, history) {
+        // Statistical analysis with trend calculation
+        const trendAnalysis = this.analyzeTrend(history);
+        const remainingSemesters = Math.max(6 - semester, 1);
+        
+        // Predict based on current trend
+        let predictedGPA = trendAnalysis.currentGPA + (trendAnalysis.trend * remainingSemesters);
+        
+        // Confidence level calculation
+        const variance = this.calculateVariance(history);
+        const confidenceLevel = Math.max(60, 95 - (variance * 100));
+        
+        // Required improvement calculation
+        const requiredImprovement = target - trendAnalysis.currentGPA;
+        const improvementPerSemester = requiredImprovement / remainingSemesters;
+        
+        return {
+            predictedGPA: Math.max(0, Math.min(4, predictedGPA)),
+            currentGPA: trendAnalysis.currentGPA,
+            targetGPA: target,
+            trend: trendAnalysis.trend,
+            confidence: confidenceLevel,
+            requiredImprovement: improvementPerSemester,
+            remainingSemesters: remainingSemesters,
+            achievable: Math.abs(improvementPerSemester) <= 0.5
+        };
+    }
+
+    analyzeTrend(history) {
+        if (history.length < 2) {
+            return { currentGPA: 3.0, trend: 0 };
+        }
+        
+        const recent = history.slice(-3); // Last 3 entries
+        const gpaValues = recent.map(h => h.gpa);
+        
+        // Calculate linear trend
+        let trend = 0;
+        for (let i = 1; i < gpaValues.length; i++) {
+            trend += gpaValues[i] - gpaValues[i-1];
+        }
+        trend = trend / (gpaValues.length - 1);
+        
+        return {
+            currentGPA: gpaValues[gpaValues.length - 1] || 3.0,
+            trend: trend
+        };
+    }
+
+    calculateVariance(history) {
+        if (history.length < 2) return 0;
+        
+        const gpaValues = history.map(h => h.gpa);
+        const mean = gpaValues.reduce((a, b) => a + b, 0) / gpaValues.length;
+        const variance = gpaValues.reduce((acc, gpa) => acc + Math.pow(gpa - mean, 2), 0) / gpaValues.length;
+        
+        return Math.sqrt(variance);
+    }
+
+    displayGPAPrediction(prediction) {
+        const resultsDiv = document.getElementById('gpaPredictonResults');
+        
+        let html = `
+            <h4><i class="fas fa-crystal-ball"></i> Ramalan CGPA Masa Hadapan</h4>
+            
+            <div class="prediction-card">
+                <div class="prediction-value">${prediction.predictedGPA.toFixed(2)}</div>
+                <div class="confidence-level">Tahap Keyakinan: ${prediction.confidence.toFixed(0)}%</div>
+            </div>
+            
+            <div class="prediction-details">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <strong>CGPA Semasa:</strong> ${prediction.currentGPA.toFixed(2)}
+                    </div>
+                    <div>
+                        <strong>Target CGPA:</strong> ${prediction.targetGPA.toFixed(2)}
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong>Trend Prestasi:</strong> 
+                    <span style="color: ${prediction.trend > 0 ? '#27ae60' : prediction.trend < 0 ? '#e74c3c' : '#f39c12'}">
+                        ${prediction.trend > 0 ? '📈 Meningkat' : prediction.trend < 0 ? '📉 Menurun' : '➡️ Stabil'}
+                    </span>
+                    (${prediction.trend > 0 ? '+' : ''}${prediction.trend.toFixed(3)} per semester)
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong>Peningkatan Diperlukan:</strong> 
+                    <span style="color: ${prediction.achievable ? '#27ae60' : '#e74c3c'}">
+                        ${prediction.requiredImprovement.toFixed(3)} per semester
+                    </span>
+                </div>
+                
+                <div style="padding: 1rem; background: ${prediction.achievable ? '#d4edda' : '#f8d7da'}; 
+                     border-radius: 8px; color: ${prediction.achievable ? '#155724' : '#721c24'}">
+                    <strong>💡 Analisis AI:</strong> 
+                    ${prediction.achievable 
+                        ? 'Target anda BOLEH dicapai dengan usaha yang konsisten!'
+                        : 'Target agak mencabar. Pertimbangkan strategi pembelajaran intensif atau tukar target yang lebih realistik.'
+                    }
+                </div>
+            </div>
+        `;
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        resultsDiv.classList.add('show');
+    }
+
+    // Get user data helper functions
+    getUserCourses() {
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        const subjects = [...new Set(grades.map(g => g.subject))];
+        
+        return subjects.map(subject => {
+            const subjectGrades = grades.filter(g => g.subject === subject);
+            const avgGrade = subjectGrades.reduce((sum, g) => sum + g.gpa, 0) / subjectGrades.length;
+            
+            return {
+                name: subject,
+                grade: avgGrade || 3.0
+            };
+        });
+    }
+
+    getUpcomingAssignments() {
+        const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+        const today = new Date();
+        const upcoming = assignments.filter(a => {
+            const dueDate = new Date(a.dueDate);
+            const diffDays = (dueDate - today) / (1000 * 60 * 60 * 24);
+            return diffDays > 0 && diffDays <= 14; // Next 2 weeks
+        });
+        
+        return upcoming.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    }
+
+    getGradeHistory() {
+        const grades = JSON.parse(localStorage.getItem('grades') || '[]');
+        // Group by semester/month and calculate average GPA
+        const history = [];
+        
+        grades.forEach(grade => {
+            const date = new Date(grade.date || Date.now());
+            const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+            
+            let monthData = history.find(h => h.period === monthKey);
+            if (!monthData) {
+                monthData = { period: monthKey, grades: [], gpa: 0 };
+                history.push(monthData);
+            }
+            
+            monthData.grades.push(grade);
+        });
+        
+        // Calculate average GPA for each period
+        history.forEach(period => {
+            const totalGPA = period.grades.reduce((sum, g) => sum + g.gpa, 0);
+            period.gpa = totalGPA / period.grades.length;
+        });
+        
+        return history.sort((a, b) => a.period.localeCompare(b.period));
+    }
+
+    calculateCurrentGPA(history) {
+        if (history.length === 0) return 3.0;
+        return history[history.length - 1].gpa;
+    }
+
+    loadStudyPatterns() {
+        return JSON.parse(localStorage.getItem('studyPatterns') || '{}');
+    }
+
+    saveStudyPatterns() {
+        localStorage.setItem('studyPatterns', JSON.stringify(this.studyPatterns));
+    }
+
+    // Recipe Recommendation System
+    initializeRecipeDatabase() {
+        return {
+            'malay': [
+                {
+                    name: 'Nasi Lemak',
+                    ingredients: ['nasi', 'santan', 'ikan bilis', 'kacang tanah', 'timun', 'telur'],
+                    difficulty: 'easy',
+                    cookingTime: 30,
+                    description: 'Hidangan tradisional Malaysia yang popular'
+                },
+                {
+                    name: 'Rendang Daging',
+                    ingredients: ['daging lembu', 'santan', 'serai', 'lengkuas', 'cili kering', 'bawang'],
+                    difficulty: 'hard',
+                    cookingTime: 120,
+                    description: 'Masakan berempah yang kaya dengan rasa'
+                },
+                {
+                    name: 'Ayam Masak Merah',
+                    ingredients: ['ayam', 'tomato', 'bawang', 'cili', 'sos tomato', 'garam'],
+                    difficulty: 'medium',
+                    cookingTime: 45,
+                    description: 'Ayam dimasak dengan sos tomato yang sedap'
+                }
+            ],
+            'chinese': [
+                {
+                    name: 'Fried Rice',
+                    ingredients: ['nasi', 'telur', 'sosej', 'kacang peas', 'bawang', 'kicap'],
+                    difficulty: 'easy',
+                    cookingTime: 20,
+                    description: 'Nasi goreng ala Cina yang simple dan sedap'
+                },
+                {
+                    name: 'Sweet & Sour Fish',
+                    ingredients: ['ikan', 'nanas', 'tomato', 'capsicum', 'sos tomato', 'gula'],
+                    difficulty: 'medium',
+                    cookingTime: 35,
+                    description: 'Ikan dengan rasa masam manis yang menyelerakan'
+                }
+            ],
+            'western': [
+                {
+                    name: 'Spaghetti Bolognese',
+                    ingredients: ['spaghetti', 'daging cincang', 'tomato', 'bawang', 'bawang putih', 'keju'],
+                    difficulty: 'medium',
+                    cookingTime: 40,
+                    description: 'Pasta Italia dengan sos daging yang lazat'
+                },
+                {
+                    name: 'Grilled Chicken',
+                    ingredients: ['ayam', 'lemon', 'herbs', 'garam', 'lada hitam', 'minyak zaitun'],
+                    difficulty: 'easy',
+                    cookingTime: 25,
+                    description: 'Ayam bakar yang sihat dan sedap'
+                }
+            ]
+        };
+    }
+
+    recommendRecipes() {
+        const ingredientsInput = document.getElementById('availableIngredients').value;
+        const cuisineType = document.getElementById('cuisineType').value;
+        const difficultyLevel = document.getElementById('difficultyLevel').value;
+
+        const availableIngredients = ingredientsInput.toLowerCase()
+            .split(',')
+            .map(ingredient => ingredient.trim())
+            .filter(ingredient => ingredient.length > 0);
+
+        if (availableIngredients.length === 0) {
+            alert('Sila masukkan bahan-bahan yang tersedia!');
+            return;
+        }
+
+        const recommendations = this.findMatchingRecipes(availableIngredients, cuisineType, difficultyLevel);
+        this.displayRecipeRecommendations(recommendations, availableIngredients);
+
+        // Trigger celebration
+        setTimeout(() => {
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('🍳 Rekomendasi resipi telah dijana!');
+            }
+        }, 500);
+    }
+
+    findMatchingRecipes(availableIngredients, cuisineType, difficultyLevel) {
+        let recipes = [];
+
+        // Get recipes based on cuisine type
+        if (cuisineType === 'any') {
+            recipes = Object.values(this.recipeDatabase).flat();
+        } else {
+            recipes = this.recipeDatabase[cuisineType] || [];
+        }
+
+        // Filter by difficulty
+        if (difficultyLevel !== 'any') {
+            const difficultyMap = {
+                'beginner': 'easy',
+                'intermediate': 'medium',
+                'advanced': 'hard'
+            };
+            recipes = recipes.filter(recipe => recipe.difficulty === difficultyMap[difficultyLevel]);
+        }
+
+        // Calculate match score for each recipe
+        const scoredRecipes = recipes.map(recipe => {
+            const matchScore = this.calculateIngredientMatch(availableIngredients, recipe.ingredients);
+            return {
+                ...recipe,
+                matchScore: matchScore,
+                missingIngredients: recipe.ingredients.filter(ing => 
+                    !availableIngredients.some(avail => ing.toLowerCase().includes(avail.toLowerCase()))
+                )
+            };
+        });
+
+        // Sort by match score (highest first)
+        return scoredRecipes
+            .filter(recipe => recipe.matchScore > 0.3) // At least 30% match
+            .sort((a, b) => b.matchScore - a.matchScore)
+            .slice(0, 5); // Top 5 recommendations
+    }
+
+    calculateIngredientMatch(available, required) {
+        const matches = required.filter(reqIng => 
+            available.some(availIng => 
+                reqIng.toLowerCase().includes(availIng.toLowerCase()) ||
+                availIng.toLowerCase().includes(reqIng.toLowerCase())
+            )
+        );
+        
+        return matches.length / required.length;
+    }
+
+    displayRecipeRecommendations(recommendations, availableIngredients) {
+        const resultsDiv = document.getElementById('recipeRecommendations');
+        
+        if (recommendations.length === 0) {
+            resultsDiv.innerHTML = `
+                <h4><i class="fas fa-search"></i> Tiada Resipi Dijumpai</h4>
+                <p>Maaf, tiada resipi yang sesuai dengan bahan-bahan yang ada. Cuba tambah lebih banyak bahan atau tukar jenis masakan.</p>
+            `;
+        } else {
+            let html = `
+                <h4><i class="fas fa-utensils"></i> Rekomendasi Resipi AI (${recommendations.length} dijumpai)</h4>
+                <p>Berdasarkan bahan: <strong>${availableIngredients.join(', ')}</strong></p>
+            `;
+
+            recommendations.forEach((recipe, index) => {
+                const difficultyClass = recipe.difficulty === 'easy' ? 'easy' : 
+                                      recipe.difficulty === 'medium' ? 'medium' : 'hard';
+                
+                html += `
+                    <div class="recipe-item" style="animation-delay: ${index * 0.1}s">
+                        <div class="recipe-name">${recipe.name}</div>
+                        <div class="recipe-difficulty ${difficultyClass}">
+                            ${recipe.difficulty === 'easy' ? 'Mudah' : 
+                              recipe.difficulty === 'medium' ? 'Sederhana' : 'Sukar'}
+                        </div>
+                        <div class="recipe-description">${recipe.description}</div>
+                        <div class="recipe-ingredients">
+                            <strong>Bahan diperlukan:</strong> ${recipe.ingredients.join(', ')}
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                            <div class="recipe-match-score">
+                                🎯 ${(recipe.matchScore * 100).toFixed(0)}% padanan
+                            </div>
+                            <div style="color: #666;">
+                                ⏱️ ${recipe.cookingTime} minit
+                            </div>
+                        </div>
+                        ${recipe.missingIngredients.length > 0 ? `
+                            <div style="margin-top: 0.5rem; padding: 0.5rem; background: #fff3cd; border-radius: 5px; font-size: 0.9rem;">
+                                <strong>Bahan tambahan diperlukan:</strong> ${recipe.missingIngredients.join(', ')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+        }
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        resultsDiv.classList.add('show');
+    }
+
+    // Learning Analytics & Insights
+    generateInsights() {
+        const userData = this.gatherUserData();
+        const insights = this.analyzeUserPattern(userData);
+        this.displayLearningInsights(insights);
+
+        // Trigger celebration
+        setTimeout(() => {
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('📊 Analitik pembelajaran telah dijana!');
+            }
+        }, 500);
+    }
+
+    gatherUserData() {
+        return {
+            grades: JSON.parse(localStorage.getItem('grades') || '[]'),
+            assignments: JSON.parse(localStorage.getItem('assignments') || '[]'),
+            attendance: JSON.parse(localStorage.getItem('attendance') || '[]'),
+            goals: JSON.parse(localStorage.getItem('goals') || '[]'),
+            studyTime: JSON.parse(localStorage.getItem('studyTime') || '[]')
+        };
+    }
+
+    analyzeUserPattern(data) {
+        const insights = [];
+
+        // GPA Analysis
+        if (data.grades.length > 0) {
+            const avgGPA = data.grades.reduce((sum, g) => sum + g.gpa, 0) / data.grades.length;
+            const trend = this.calculateGradeTrend(data.grades);
+            
+            insights.push({
+                type: 'academic',
+                icon: 'fas fa-chart-line',
+                title: 'Prestasi Akademik',
+                description: `CGPA purata anda: ${avgGPA.toFixed(2)}`,
+                recommendation: avgGPA >= 3.5 ? 
+                    'Prestasi cemerlang! Kekalkan momentum ini.' :
+                    avgGPA >= 3.0 ?
+                    'Prestasi baik. Ada ruang untuk penambahbaikan.' :
+                    'Fokus pada subjek yang lemah untuk peningkatan.',
+                trend: trend
+            });
+        }
+
+        // Assignment Analysis
+        if (data.assignments.length > 0) {
+            const completionRate = this.calculateCompletionRate(data.assignments);
+            insights.push({
+                type: 'productivity',
+                icon: 'fas fa-tasks',
+                title: 'Produktiviti Tugasan',
+                description: `Kadar siap tugasan: ${completionRate.toFixed(0)}%`,
+                recommendation: completionRate >= 80 ?
+                    'Excellent time management!' :
+                    completionRate >= 60 ?
+                    'Good progress. Improve planning untuk deadline.' :
+                    'Perlukan strategi time management yang lebih baik.'
+            });
+        }
+
+        // Attendance Analysis
+        if (data.attendance.length > 0) {
+            const attendanceRate = this.calculateAttendanceRate(data.attendance);
+            insights.push({
+                type: 'attendance',
+                icon: 'fas fa-user-check',
+                title: 'Kehadiran Kelas',
+                description: `Kadar kehadiran: ${attendanceRate.toFixed(0)}%`,
+                recommendation: attendanceRate >= 90 ?
+                    'Kehadiran sangat baik!' :
+                    attendanceRate >= 75 ?
+                    'Kehadiran memuaskan. Pastikan consistent.' :
+                    'Tingkatkan kehadiran untuk prestasi yang lebih baik.'
+            });
+        }
+
+        return insights;
+    }
+
+    calculateGradeTrend(grades) {
+        if (grades.length < 2) return 'stable';
+        
+        const recent = grades.slice(-5); // Last 5 grades
+        const gpaValues = recent.map(g => g.gpa);
+        
+        let trend = 0;
+        for (let i = 1; i < gpaValues.length; i++) {
+            trend += gpaValues[i] - gpaValues[i-1];
+        }
+        
+        return trend > 0.1 ? 'improving' : trend < -0.1 ? 'declining' : 'stable';
+    }
+
+    calculateCompletionRate(assignments) {
+        if (assignments.length === 0) return 100;
+        
+        const completed = assignments.filter(a => a.status === 'completed').length;
+        return (completed / assignments.length) * 100;
+    }
+
+    calculateAttendanceRate(attendance) {
+        if (attendance.length === 0) return 100;
+        
+        const present = attendance.filter(a => a.status === 'present').length;
+        return (present / attendance.length) * 100;
+    }
+
+    displayLearningInsights(insights) {
+        const resultsDiv = document.getElementById('learningInsights');
+        
+        let html = `
+            <h4><i class="fas fa-brain"></i> Analitik Pembelajaran Pintar</h4>
+        `;
+
+        if (insights.length === 0) {
+            html += `
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>Mulakan menggunakan BreyerHub untuk mendapat insight yang berguna!</p>
+                </div>
+            `;
+        } else {
+            insights.forEach((insight, index) => {
+                const trendIcon = insight.trend === 'improving' ? '📈' : 
+                                insight.trend === 'declining' ? '📉' : '➡️';
+                
+                html += `
+                    <div class="insight-card" style="animation-delay: ${index * 0.1}s; margin-bottom: 1rem; 
+                         padding: 1rem; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                            <i class="${insight.icon}" style="font-size: 1.5rem; color: var(--accent-color); margin-right: 0.5rem;"></i>
+                            <h5>${insight.title}</h5>
+                            ${insight.trend ? `<span style="margin-left: auto; font-size: 1.2rem;">${trendIcon}</span>` : ''}
+                        </div>
+                        <p style="color: #666; margin-bottom: 0.5rem;">${insight.description}</p>
+                        <div style="padding: 0.5rem; background: #f8f9fa; border-radius: 5px; border-left: 3px solid var(--accent-color);">
+                            <strong>💡 Cadangan:</strong> ${insight.recommendation}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        resultsDiv.classList.add('show');
+    }
+
+    // Career Path Guidance
+    initializeCareerDatabase() {
+        return {
+            'culinary': {
+                careers: [
+                    {
+                        title: 'Executive Chef',
+                        description: 'Memimpin operasi dapur dan menu development di hotel atau restoran mewah.',
+                        skills: ['Leadership', 'Menu Planning', 'Cost Control', 'Team Management'],
+                        salaryRange: 'RM 8,000 - RM 15,000',
+                        growth: 'high'
+                    },
+                    {
+                        title: 'Food & Beverage Manager',
+                        description: 'Mengurus operasi F&B secara menyeluruh termasuk service dan kitchen.',
+                        skills: ['Management', 'Customer Service', 'Budgeting', 'Staff Training'],
+                        salaryRange: 'RM 6,000 - RM 12,000',
+                        growth: 'medium'
+                    },
+                    {
+                        title: 'Culinary Entrepreneur',
+                        description: 'Memulakan business sendiri seperti restaurant, cafe, atau catering.',
+                        skills: ['Business Planning', 'Marketing', 'Financial Management', 'Innovation'],
+                        salaryRange: 'RM 5,000 - RM 50,000+',
+                        growth: 'very-high'
+                    }
+                ]
+            },
+            'computer': {
+                careers: [
+                    {
+                        title: 'IT Support Specialist',
+                        description: 'Menyediakan technical support dan menyelesaikan masalah komputer.',
+                        skills: ['Troubleshooting', 'Hardware Repair', 'Network Setup', 'Customer Service'],
+                        salaryRange: 'RM 3,000 - RM 6,000',
+                        growth: 'medium'
+                    },
+                    {
+                        title: 'Network Administrator',
+                        description: 'Mengurus dan maintain network infrastructure organisasi.',
+                        skills: ['Network Security', 'Server Management', 'Monitoring Tools', 'Documentation'],
+                        salaryRange: 'RM 5,000 - RM 10,000',
+                        growth: 'high'
+                    },
+                    {
+                        title: 'Cybersecurity Analyst',
+                        description: 'Melindungi sistem dan data organisasi dari ancaman cyber.',
+                        skills: ['Security Protocols', 'Risk Assessment', 'Incident Response', 'Compliance'],
+                        salaryRange: 'RM 7,000 - RM 15,000',
+                        growth: 'very-high'
+                    }
+                ]
+            },
+            'electrical': {
+                careers: [
+                    {
+                        title: 'Electrical Technician',
+                        description: 'Install, maintain, dan repair electrical systems dan equipment.',
+                        skills: ['Wiring', 'Circuit Analysis', 'Safety Protocols', 'Blueprint Reading'],
+                        salaryRange: 'RM 3,500 - RM 7,000',
+                        growth: 'medium'
+                    },
+                    {
+                        title: 'Automation Engineer',
+                        description: 'Design dan implement automated systems untuk manufacturing.',
+                        skills: ['PLC Programming', 'Control Systems', 'Robotics', 'Process Optimization'],
+                        salaryRange: 'RM 6,000 - RM 12,000',
+                        growth: 'high'
+                    }
+                ]
+            },
+            'fnb': {
+                careers: [
+                    {
+                        title: 'Restaurant Manager',
+                        description: 'Mengurus daily operations restaurant dan ensure customer satisfaction.',
+                        skills: ['Operations Management', 'Staff Supervision', 'Inventory Control', 'P&L Management'],
+                        salaryRange: 'RM 4,000 - RM 8,000',
+                        growth: 'medium'
+                    },
+                    {
+                        title: 'Food Service Director',
+                        description: 'Oversee food service operations untuk large organizations atau chains.',
+                        skills: ['Strategic Planning', 'Multi-unit Management', 'Vendor Relations', 'Quality Assurance'],
+                        salaryRange: 'RM 8,000 - RM 15,000',
+                        growth: 'high'
+                    }
+                ]
+            },
+            'admin': {
+                careers: [
+                    {
+                        title: 'Office Manager',
+                        description: 'Mengurus administrative functions dan office operations.',
+                        skills: ['Office Administration', 'Staff Coordination', 'Record Management', 'Communication'],
+                        salaryRange: 'RM 3,000 - RM 6,000',
+                        growth: 'medium'
+                    },
+                    {
+                        title: 'Operations Manager',
+                        description: 'Oversee business operations dan improve efficiency processes.',
+                        skills: ['Process Improvement', 'Project Management', 'Data Analysis', 'Strategic Planning'],
+                        salaryRange: 'RM 6,000 - RM 12,000',
+                        growth: 'high'
+                    }
+                ]
+            }
+        };
+    }
+
+    generateCareerGuidance() {
+        const program = document.getElementById('studyProgram').value;
+        const interest = document.getElementById('careerInterest').value;
+        
+        const careers = this.getRelevantCareers(program, interest);
+        this.displayCareerGuidance(careers, program);
+
+        // Trigger celebration
+        setTimeout(() => {
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('🗺️ Panduan kerjaya telah dijana!');
+            }
+        }, 500);
+    }
+
+    getRelevantCareers(program, interest) {
+        const programCareers = this.careerDatabase[program]?.careers || [];
+        
+        // Filter based on interest
+        let filteredCareers = programCareers;
+        if (interest === 'management') {
+            filteredCareers = programCareers.filter(career => 
+                career.title.toLowerCase().includes('manager') || 
+                career.skills.some(skill => skill.toLowerCase().includes('management'))
+            );
+        } else if (interest === 'technical') {
+            filteredCareers = programCareers.filter(career => 
+                career.skills.some(skill => 
+                    skill.toLowerCase().includes('technical') || 
+                    skill.toLowerCase().includes('programming') ||
+                    skill.toLowerCase().includes('repair')
+                )
+            );
+        }
+        
+        return filteredCareers.length > 0 ? filteredCareers : programCareers;
+    }
+
+    displayCareerGuidance(careers, program) {
+        const resultsDiv = document.getElementById('careerGuidance');
+        
+        let html = `
+            <h4><i class="fas fa-compass"></i> Panduan Kerjaya untuk ${program.charAt(0).toUpperCase() + program.slice(1)}</h4>
+        `;
+
+        if (careers.length === 0) {
+            html += `
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <p>Maaf, tiada data kerjaya untuk program ini buat masa sekarang.</p>
+                </div>
+            `;
+        } else {
+            careers.forEach((career, index) => {
+                const growthColor = career.growth === 'very-high' ? '#27ae60' :
+                                 career.growth === 'high' ? '#2ecc71' :
+                                 career.growth === 'medium' ? '#f39c12' : '#e74c3c';
+                
+                html += `
+                    <div class="career-path" style="animation-delay: ${index * 0.1}s">
+                        <div class="career-title">${career.title}</div>
+                        <div class="career-description">${career.description}</div>
+                        
+                        <div class="career-skills">
+                            <h5>💼 Kemahiran Diperlukan:</h5>
+                            ${career.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                            
+                            <div style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <strong>💰 Gaji:</strong> ${career.salaryRange}
+                                </div>
+                                <div>
+                                    <strong>📈 Prospek:</strong> 
+                                    <span style="color: ${growthColor}">
+                                        ${career.growth === 'very-high' ? 'Sangat Tinggi' :
+                                          career.growth === 'high' ? 'Tinggi' :
+                                          career.growth === 'medium' ? 'Sederhana' : 'Rendah'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        resultsDiv.classList.add('show');
+    }
+
+    // Study Recommendations
+    getStudyRecommendations() {
+        const userData = this.gatherUserData();
+        const recommendations = this.generateStudyRecommendations(userData);
+        this.displayStudyRecommendations(recommendations);
+
+        // Trigger celebration
+        setTimeout(() => {
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('💡 Tips kajian pintar telah dijana!');
+            }
+        }, 500);
+    }
+
+    generateStudyRecommendations(data) {
+        const recommendations = [];
+
+        // Time management recommendations
+        if (data.assignments.length > 0) {
+            const overdue = data.assignments.filter(a => 
+                new Date(a.dueDate) < new Date() && a.status !== 'completed'
+            ).length;
+            
+            if (overdue > 0) {
+                recommendations.push({
+                    category: 'Time Management',
+                    tip: 'Anda ada tugasan tertunggak. Gunakan Pomodoro Technique: 25 minit fokus, 5 minit rehat.',
+                    priority: 'high'
+                });
+            }
+        }
+
+        // Study technique recommendations
+        if (data.grades.length > 0) {
+            const avgGPA = data.grades.reduce((sum, g) => sum + g.gpa, 0) / data.grades.length;
+            
+            if (avgGPA < 3.0) {
+                recommendations.push({
+                    category: 'Study Technique',
+                    tip: 'Cuba active recall method: Tutup buku dan cuba ingat apa yang dipelajari.',
+                    priority: 'high'
+                });
+            }
+        }
+
+        // General recommendations
+        recommendations.push(
+            {
+                category: 'Memory Enhancement',
+                tip: 'Gunakan spaced repetition: Review materi pada hari 1, 3, 7, dan 21.',
+                priority: 'medium'
+            },
+            {
+                category: 'Health & Wellness',
+                tip: 'Tidur 7-8 jam setiap malam untuk brain consolidation yang optimal.',
+                priority: 'medium'
+            },
+            {
+                category: 'Environment',
+                tip: 'Buat dedicated study space yang bersih dan bebas dari distraction.',
+                priority: 'low'
+            }
+        );
+
+        return recommendations.sort((a, b) => {
+            const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+            return priorityOrder[b.priority] - priorityOrder[a.priority];
+        });
+    }
+
+    displayStudyRecommendations(recommendations) {
+        const resultsDiv = document.getElementById('learningInsights');
+        
+        let html = `
+            <h4><i class="fas fa-lightbulb"></i> Tips Kajian Pintar AI</h4>
+            <p>Cadangan berdasarkan analisis pola pembelajaran anda:</p>
+        `;
+
+        recommendations.forEach((rec, index) => {
+            const priorityColor = rec.priority === 'high' ? '#e74c3c' :
+                                rec.priority === 'medium' ? '#f39c12' : '#27ae60';
+            
+            html += `
+                <div class="recommendation-item" style="animation-delay: ${index * 0.1}s; margin-bottom: 1rem; 
+                     padding: 1rem; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                     border-left: 4px solid ${priorityColor};">
+                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="background: ${priorityColor}; color: white; padding: 0.2rem 0.5rem; 
+                              border-radius: 10px; font-size: 0.8rem; margin-right: 0.5rem;">
+                            ${rec.priority.toUpperCase()}
+                        </span>
+                        <strong>${rec.category}</strong>
+                    </div>
+                    <p style="margin: 0; color: #666;">${rec.tip}</p>
+                </div>
+            `;
+        });
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        resultsDiv.classList.add('show');
+    }
+}
+
+// Initialize AI Features
+const aiFeatures = new AIFeatures();
+
+console.log('🎉 AI Features loaded successfully!');
+
+console.log('🎉 AI Features loaded successfully!');
