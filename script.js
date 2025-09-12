@@ -4449,6 +4449,9 @@ class FnBTools {
                         </div>
                     ` : ''}
                     <div class="menu-item-actions" style="margin-top: 1rem;">
+                        <button class="btn secondary" onclick="fnbTools.editMenuItem('${item.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
                         <button class="btn danger" onclick="fnbTools.deleteMenuItem('${item.id}')">
                             <i class="fas fa-trash"></i> Padam
                         </button>
@@ -4498,6 +4501,272 @@ class FnBTools {
             this.displaySavedMenuItems();
             alert('Item menu telah dipadam');
         }
+    }
+
+    editMenuItem(id) {
+        const item = this.savedMenuItems.find(item => item.id === id);
+        if (!item) {
+            alert('Item menu tidak dijumpai');
+            return;
+        }
+
+        // Populate form with existing data
+        document.getElementById('menuCategory').value = item.category;
+        document.getElementById('menuSeason').value = item.season;
+        document.getElementById('menuItemTitle').value = item.title;
+        document.getElementById('menuPrice').value = item.price;
+        document.getElementById('menuPrepTime').value = item.prepTime;
+        document.getElementById('menuDescription').value = item.description;
+
+        // Set allergen checkboxes
+        const allergenCheckboxes = document.querySelectorAll('.allergen-checkboxes input[type="checkbox"]');
+        allergenCheckboxes.forEach(checkbox => {
+            checkbox.checked = item.allergens.includes(checkbox.value);
+        });
+
+        // Change button to update mode
+        const addButton = document.querySelector('button[onclick="fnbTools.addMenuItem()"]');
+        if (addButton) {
+            addButton.innerHTML = '<i class="fas fa-save"></i> Kemaskini Menu';
+            addButton.setAttribute('onclick', `fnbTools.updateMenuItem('${id}')`);
+            addButton.className = 'btn warning';
+        }
+
+        // Show cancel button
+        if (!document.getElementById('cancelEditBtn')) {
+            const cancelBtn = document.createElement('button');
+            cancelBtn.id = 'cancelEditBtn';
+            cancelBtn.className = 'btn secondary';
+            cancelBtn.innerHTML = '<i class="fas fa-times"></i> Batal';
+            cancelBtn.style.marginLeft = '10px';
+            cancelBtn.onclick = () => this.cancelEdit();
+            addButton.parentNode.insertBefore(cancelBtn, addButton.nextSibling);
+        }
+
+        // Scroll to form
+        document.getElementById('menuItemTitle').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('menuItemTitle').focus();
+
+        // Show success message
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('📝 Mode edit diaktifkan!');
+        }
+    }
+
+    updateMenuItem(id) {
+        const category = document.getElementById('menuCategory').value;
+        const season = document.getElementById('menuSeason').value;
+        const title = document.getElementById('menuItemTitle').value;
+        const price = parseFloat(document.getElementById('menuPrice').value);
+        const prepTime = parseInt(document.getElementById('menuPrepTime').value);
+        const description = document.getElementById('menuDescription').value;
+
+        const allergenCheckboxes = document.querySelectorAll('.allergen-checkboxes input[type="checkbox"]:checked');
+        const allergens = Array.from(allergenCheckboxes).map(cb => cb.value);
+
+        if (!title || !price) {
+            alert('Sila masukkan nama menu dan harga');
+            return;
+        }
+
+        // Find and update the item
+        const itemIndex = this.savedMenuItems.findIndex(item => item.id === id);
+        if (itemIndex !== -1) {
+            const updatedItem = {
+                id: id, // Keep original ID
+                category,
+                season,
+                title,
+                price,
+                prepTime,
+                description,
+                allergens,
+                dateModified: new Date().toISOString()
+            };
+
+            this.savedMenuItems[itemIndex] = updatedItem;
+            localStorage.setItem('menuItems', JSON.stringify(this.savedMenuItems));
+            this.displaySavedMenuItems();
+            this.resetForm();
+
+            // Show success message
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('✅ Menu berjaya dikemaskini!');
+            }
+            alert('Menu berjaya dikemaskini!');
+        }
+    }
+
+    cancelEdit() {
+        this.resetForm();
+        
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('↩️ Edit dibatalkan');
+        }
+    }
+
+    resetForm() {
+        // Clear form
+        document.getElementById('menuCategory').value = '';
+        document.getElementById('menuSeason').value = '';
+        document.getElementById('menuItemTitle').value = '';
+        document.getElementById('menuPrice').value = '';
+        document.getElementById('menuPrepTime').value = '';
+        document.getElementById('menuDescription').value = '';
+
+        // Uncheck allergen checkboxes
+        const allergenCheckboxes = document.querySelectorAll('.allergen-checkboxes input[type="checkbox"]');
+        allergenCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+
+        // Reset button to add mode
+        const updateButton = document.querySelector('button[onclick*="updateMenuItem"]');
+        if (updateButton) {
+            updateButton.innerHTML = '<i class="fas fa-plus"></i> Tambah ke Menu';
+            updateButton.setAttribute('onclick', 'fnbTools.addMenuItem()');
+            updateButton.className = 'btn primary';
+        }
+
+        // Remove cancel button
+        const cancelBtn = document.getElementById('cancelEditBtn');
+        if (cancelBtn) {
+            cancelBtn.remove();
+        }
+    }
+
+    // Enhanced menu search and filter functionality
+    searchMenu(searchTerm) {
+        const filteredItems = this.savedMenuItems.filter(item => 
+            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.category.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        
+        this.displayFilteredMenuItems(filteredItems);
+    }
+
+    filterMenuByCategory(category) {
+        if (category === 'all') {
+            this.displaySavedMenuItems();
+        } else {
+            const filteredItems = this.savedMenuItems.filter(item => item.category === category);
+            this.displayFilteredMenuItems(filteredItems);
+        }
+    }
+
+    filterMenuBySeason(season) {
+        if (season === 'all') {
+            this.displaySavedMenuItems();
+        } else {
+            const filteredItems = this.savedMenuItems.filter(item => item.season === season);
+            this.displayFilteredMenuItems(filteredItems);
+        }
+    }
+
+    displayFilteredMenuItems(items) {
+        const container = document.getElementById('savedMenuItems');
+        if (!container) return;
+
+        if (items.length === 0) {
+            container.innerHTML = '<p>Tiada item menu yang sepadan dengan tapisan.</p>';
+            return;
+        }
+
+        container.innerHTML = items.map(item => `
+            <div class="menu-item">
+                <div class="menu-item-header">
+                    <span class="menu-item-title">${item.title}</span>
+                    <span class="menu-item-price">RM ${item.price.toFixed(2)}</span>
+                </div>
+                <div class="menu-item-content">
+                    <div class="menu-item-details">
+                        <div class="menu-detail">
+                            <strong>Kategori:</strong><br>${this.getCategoryName(item.category)}
+                        </div>
+                        <div class="menu-detail">
+                            <strong>Musim:</strong><br>${this.getSeasonName(item.season)}
+                        </div>
+                        <div class="menu-detail">
+                            <strong>Masa:</strong><br>${item.prepTime} minit
+                        </div>
+                    </div>
+                    ${item.description ? `<p><strong>Penerangan:</strong> ${item.description}</p>` : ''}
+                    ${item.allergens.length > 0 ? `
+                        <div class="allergen-tags">
+                            ${item.allergens.map(allergen => `<span class="allergen-tag">${this.getAllergenName(allergen)}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="menu-item-actions" style="margin-top: 1rem;">
+                        <button class="btn secondary" onclick="fnbTools.editMenuItem('${item.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn danger" onclick="fnbTools.deleteMenuItem('${item.id}')">
+                            <i class="fas fa-trash"></i> Padam
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Export menu functionality
+    exportMenu() {
+        if (this.savedMenuItems.length === 0) {
+            alert('Tiada menu untuk di-export');
+            return;
+        }
+
+        const menuData = {
+            exportDate: new Date().toISOString(),
+            totalItems: this.savedMenuItems.length,
+            categories: [...new Set(this.savedMenuItems.map(item => item.category))],
+            menuItems: this.savedMenuItems
+        };
+
+        const jsonData = JSON.stringify(menuData, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `BreyerHub_Menu_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('📋 Menu berjaya di-export!');
+        }
+    }
+
+    // Import menu functionality
+    importMenu(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                
+                if (importedData.menuItems && Array.isArray(importedData.menuItems)) {
+                    // Merge with existing items (avoid duplicates by ID)
+                    importedData.menuItems.forEach(item => {
+                        if (!this.savedMenuItems.find(existing => existing.id === item.id)) {
+                            this.savedMenuItems.push(item);
+                        }
+                    });
+                    
+                    localStorage.setItem('menuItems', JSON.stringify(this.savedMenuItems));
+                    this.displaySavedMenuItems();
+                    
+                    if (typeof triggerCelebration === 'function') {
+                        triggerCelebration('📥 Menu berjaya di-import!');
+                    }
+                    alert(`${importedData.menuItems.length} item menu berjaya di-import!`);
+                } else {
+                    alert('Format file tidak sah');
+                }
+            } catch (error) {
+                alert('Error importing menu: ' + error.message);
+            }
+        };
+        reader.readAsText(file);
     }
 }
 

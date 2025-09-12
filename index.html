@@ -1762,6 +1762,56 @@
                             <button onclick="fnbTools.addMenuItem()" class="btn primary">
                                 <i class="fas fa-plus"></i> Tambah ke Menu
                             </button>
+                            
+                            <!-- Menu Management Controls -->
+                            <div class="menu-controls" style="margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                                <h4><i class="fas fa-cogs"></i> Pengurusan Menu</h4>
+                                <div class="control-row" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                                        <label for="menuSearch">Cari Menu:</label>
+                                        <input type="text" id="menuSearch" placeholder="Cari nama menu..." onkeyup="fnbTools.searchMenu(this.value)">
+                                    </div>
+                                    
+                                    <div class="form-group" style="flex: 1; min-width: 150px;">
+                                        <label for="categoryFilter">Tapis Kategori:</label>
+                                        <select id="categoryFilter" onchange="fnbTools.filterMenuByCategory(this.value)">
+                                            <option value="all">Semua Kategori</option>
+                                            <option value="appetizer">Pembuka Selera</option>
+                                            <option value="main">Hidangan Utama</option>
+                                            <option value="dessert">Pencuci Mulut</option>
+                                            <option value="beverage">Minuman</option>
+                                            <option value="special">Menu Istimewa</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group" style="flex: 1; min-width: 150px;">
+                                        <label for="seasonFilter">Tapis Musim:</label>
+                                        <select id="seasonFilter" onchange="fnbTools.filterMenuBySeason(this.value)">
+                                            <option value="all">Semua Musim</option>
+                                            <option value="all">Sepanjang Tahun</option>
+                                            <option value="ramadan">Bulan Ramadan</option>
+                                            <option value="festive">Musim Perayaan</option>
+                                            <option value="summer">Musim Panas</option>
+                                            <option value="winter">Musim Sejuk</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="menu-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <button class="btn success" onclick="fnbTools.exportMenu()">
+                                        <i class="fas fa-download"></i> Export Menu
+                                    </button>
+                                    <button class="btn info" onclick="document.getElementById('menuImportFile').click()">
+                                        <i class="fas fa-upload"></i> Import Menu
+                                    </button>
+                                    <button class="btn secondary" onclick="fnbTools.resetForm()">
+                                        <i class="fas fa-refresh"></i> Reset Form
+                                    </button>
+                                </div>
+                                
+                                <input type="file" id="menuImportFile" accept=".json" style="display: none;" onchange="fnbTools.importMenu(this.files[0])">
+                            </div>
+                            
                             <div class="menu-display" id="menuDisplay">
                                 <h4>Menu Tersimpan</h4>
                                 <div id="savedMenuItems"></div>
