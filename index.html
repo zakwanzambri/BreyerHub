@@ -655,7 +655,7 @@
                             <div class="integration-info">
                                 <h4>Email Notifications</h4>
                                 <p>Terima notifikasi penting melalui email</p>
-                                <button class="btn primary" onclick="cloudSync.setupEmailNotifications()">
+                                <button class="btn primary" onclick="cloudSync.connectEmailNotifications()">
                                     <i class="fas fa-link"></i> Setup
                                 </button>
                             </div>
@@ -671,6 +671,117 @@
                                 <button class="btn primary" onclick="cloudSync.connectUniversityAPI()">
                                     <i class="fas fa-link"></i> Sambung
                                 </button>
+                            </div>
+                        </div>
+
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h4>Google Drive</h4>
+                                <p>Auto-backup dokumen ke cloud</p>
+                                <button class="btn primary" onclick="cloudSync.connectGoogleDrive()">
+                                    <i class="fas fa-link"></i> Sambung
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Sync Dashboard -->
+                <div class="tracker-card">
+                    <h3><i class="fas fa-tachometer-alt"></i> Advanced Sync Dashboard</h3>
+                    
+                    <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                        <!-- Connection Status -->
+                        <div class="dashboard-widget">
+                            <h4><i class="fas fa-wifi"></i> Connection Status</h4>
+                            <div id="integrationsStatus">
+                                <!-- Dynamic integration status will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Sync Statistics -->
+                        <div class="dashboard-widget">
+                            <h4><i class="fas fa-chart-line"></i> Sync Statistics</h4>
+                            <div class="stat-grid">
+                                <div class="stat-item">
+                                    <span class="stat-value" id="totalSyncs">0</span>
+                                    <span class="stat-label">Total Syncs</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value" id="lastSyncTime">Never</span>
+                                    <span class="stat-label">Last Sync</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value" id="syncSuccess">100%</span>
+                                    <span class="stat-label">Success Rate</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value" id="dataSize">0 MB</span>
+                                    <span class="stat-label">Data Size</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="dashboard-widget">
+                            <h4><i class="fas fa-bolt"></i> Quick Actions</h4>
+                            <div class="quick-actions">
+                                <button class="btn primary" onclick="cloudSync.forceSyncAll()" title="Force sync all data">
+                                    <i class="fas fa-sync"></i> Force Sync All
+                                </button>
+                                <button class="btn warning" onclick="cloudSync.clearSyncCache()" title="Clear sync cache">
+                                    <i class="fas fa-trash"></i> Clear Cache
+                                </button>
+                                <button class="btn info" onclick="cloudSync.testConnections()" title="Test all connections">
+                                    <i class="fas fa-check"></i> Test Connections
+                                </button>
+                                <button class="btn success" onclick="cloudSync.generateSyncReport()" title="Generate sync report">
+                                    <i class="fas fa-file-alt"></i> Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sync Activity Log -->
+                    <div class="activity-log">
+                        <h4><i class="fas fa-list"></i> Recent Sync Activity</h4>
+                        <div id="syncActivityLog" class="activity-list">
+                            <!-- Activity log will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Advanced Settings -->
+                    <div class="advanced-settings" style="margin-top: 25px;">
+                        <h4><i class="fas fa-cogs"></i> Advanced Settings</h4>
+                        <div class="settings-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                            <div class="setting-group">
+                                <label for="conflictResolution">Conflict Resolution:</label>
+                                <select id="conflictResolution" onchange="cloudSync.setConflictResolution(this.value)">
+                                    <option value="merge">Smart Merge</option>
+                                    <option value="local">Prefer Local</option>
+                                    <option value="remote">Prefer Remote</option>
+                                    <option value="manual">Manual Resolution</option>
+                                </select>
+                            </div>
+                            <div class="setting-group">
+                                <label for="syncPriority">Sync Priority:</label>
+                                <select id="syncPriority" onchange="cloudSync.setSyncPriority(this.value)">
+                                    <option value="balanced">Balanced</option>
+                                    <option value="speed">Speed First</option>
+                                    <option value="quality">Quality First</option>
+                                    <option value="minimal">Minimal Data</option>
+                                </select>
+                            </div>
+                            <div class="setting-group">
+                                <label for="retryAttempts">Retry Attempts:</label>
+                                <input type="number" id="retryAttempts" min="1" max="10" value="3" onchange="cloudSync.setRetryAttempts(this.value)">
+                            </div>
+                            <div class="setting-group">
+                                <label for="syncTimeout">Sync Timeout (seconds):</label>
+                                <input type="number" id="syncTimeout" min="10" max="300" value="60" onchange="cloudSync.setSyncTimeout(this.value)">
                             </div>
                         </div>
                     </div>
