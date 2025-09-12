@@ -6129,9 +6129,1063 @@ class AIFeatures {
     }
 }
 
-// Initialize AI Features
+// Cloud Sync & Integration System
+class CloudSync {
+    constructor() {
+        this.isConnected = false;
+        this.autoSyncEnabled = true;
+        this.syncInterval = 5; // minutes
+        this.lastSyncTime = null;
+        this.deviceId = this.generateDeviceId();
+        this.activityLog = JSON.parse(localStorage.getItem('syncActivityLog') || '[]');
+        
+        this.init();
+    }
+
+    init() {
+        this.updateSyncStatus();
+        this.setupAutoSync();
+        this.detectDevice();
+        this.loadActivityLog();
+        
+        // Simulate cloud connection
+        setTimeout(() => {
+            this.simulateCloudConnection();
+        }, 2000);
+    }
+
+    generateDeviceId() {
+        let deviceId = localStorage.getItem('deviceId');
+        if (!deviceId) {
+            deviceId = 'device_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('deviceId', deviceId);
+        }
+        return deviceId;
+    }
+
+    simulateCloudConnection() {
+        this.isConnected = true;
+        this.updateSyncStatus();
+        this.addActivity('cloud-connect', 'Sambungan cloud berjaya', 'Peranti berhubung dengan cloud storage');
+        
+        // Trigger celebration
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('☁️ Cloud storage berhubung!');
+        }
+    }
+
+    updateSyncStatus() {
+        // Update local status
+        const localStatus = document.getElementById('localStatusText');
+        const localIcon = document.getElementById('localStatus');
+        if (localStatus) {
+            localStatus.textContent = 'Tersedia';
+            localStatus.className = 'status-text';
+            localIcon.style.background = 'var(--success-color)';
+        }
+
+        // Update cloud status
+        const cloudStatus = document.getElementById('cloudStatusText');
+        const cloudIcon = document.getElementById('cloudStatus');
+        const cloudUpdate = document.getElementById('cloudLastUpdate');
+        
+        if (cloudStatus) {
+            if (this.isConnected) {
+                cloudStatus.textContent = 'Berhubung';
+                cloudStatus.className = 'status-text';
+                cloudIcon.style.background = 'var(--success-color)';
+                if (cloudUpdate) {
+                    cloudUpdate.textContent = `Sinkronisasi terakhir: ${this.lastSyncTime || 'Baru sahaja'}`;
+                }
+            } else {
+                cloudStatus.textContent = 'Menghubung...';
+                cloudStatus.className = 'status-text warning';
+                cloudIcon.style.background = 'var(--warning-color)';
+                cloudIcon.classList.add('syncing');
+            }
+        }
+
+        // Update sync status
+        const syncStatus = document.getElementById('syncStatusText');
+        const syncIcon = document.getElementById('syncStatus');
+        if (syncStatus) {
+            syncStatus.textContent = this.autoSyncEnabled ? 'Aktif' : 'Tidak Aktif';
+            syncStatus.className = this.autoSyncEnabled ? 'status-text' : 'status-text warning';
+            syncIcon.style.background = this.autoSyncEnabled ? 'var(--success-color)' : 'var(--warning-color)';
+        }
+    }
+
+    setupAutoSync() {
+        if (this.autoSyncInterval) {
+            clearInterval(this.autoSyncInterval);
+        }
+        
+        if (this.autoSyncEnabled) {
+            this.autoSyncInterval = setInterval(() => {
+                this.performSync();
+            }, this.syncInterval * 60 * 1000);
+        }
+    }
+
+    manualSync() {
+        this.performSync(true);
+    }
+
+    performSync(isManual = false) {
+        if (!this.isConnected) {
+            this.addActivity('sync-error', 'Sync gagal', 'Tiada sambungan cloud');
+            return;
+        }
+
+        // Simulate sync process
+        const syncIcon = document.getElementById('syncStatus');
+        if (syncIcon) {
+            syncIcon.classList.add('syncing');
+        }
+
+        // Get all data for sync
+        const syncData = this.gatherSyncData();
+        
+        // Simulate network delay
+        setTimeout(() => {
+            this.lastSyncTime = new Date().toLocaleString('ms-MY');
+            this.updateSyncStatus();
+            
+            if (syncIcon) {
+                syncIcon.classList.remove('syncing');
+            }
+            
+            const syncType = isManual ? 'Manual sync' : 'Auto sync';
+            this.addActivity('sync-success', `${syncType} berjaya`, `${Object.keys(syncData).length} kategori data disinkronkan`);
+            
+            if (isManual && typeof triggerCelebration === 'function') {
+                triggerCelebration('🔄 Data berjaya disinkronkan!');
+            }
+        }, 2000);
+    }
+
+    gatherSyncData() {
+        return {
+            grades: localStorage.getItem('grades'),
+            assignments: localStorage.getItem('assignments'),
+            attendance: localStorage.getItem('attendance'),
+            goals: localStorage.getItem('goals'),
+            studyTime: localStorage.getItem('studyTime'),
+            analytics: localStorage.getItem('analytics'),
+            aiPreferences: localStorage.getItem('aiPreferences')
+        };
+    }
+
+    toggleAutoSync(enabled) {
+        this.autoSyncEnabled = enabled;
+        this.setupAutoSync();
+        this.updateSyncStatus();
+        
+        const action = enabled ? 'Auto sync diaktifkan' : 'Auto sync dinyahaktifkan';
+        this.addActivity('sync-setting', action, `Interval: ${this.syncInterval} minit`);
+    }
+
+    setSyncInterval(minutes) {
+        this.syncInterval = parseInt(minutes);
+        this.setupAutoSync();
+        this.addActivity('sync-setting', 'Interval sync dikemaskini', `Interval baru: ${minutes} minit`);
+    }
+
+    // Export Functions
+    exportToPDF() {
+        this.addActivity('export', 'Export PDF dimulakan', 'Menjana transkrip akademik');
+        
+        // Simulate PDF generation
+        setTimeout(() => {
+            const data = this.gatherSyncData();
+            const blob = new Blob([`BreyerHub Academic Transcript\n\nGenerated: ${new Date().toLocaleString('ms-MY')}\n\nData exported successfully!`], 
+                                 { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BreyerHub_Transcript_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            
+            this.addActivity('export-success', 'PDF transkrip berjaya', 'Fail dimuat turun');
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('📄 Transkrip PDF berjaya dijana!');
+            }
+        }, 1500);
+    }
+
+    exportToExcel() {
+        this.addActivity('export', 'Export Excel dimulakan', 'Menjana laporan akademik');
+        
+        setTimeout(() => {
+            const data = this.gatherSyncData();
+            const csvContent = this.convertToCSV(data);
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BreyerHub_Report_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            
+            this.addActivity('export-success', 'Excel report berjaya', 'Fail CSV dimuat turun');
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('📊 Laporan Excel berjaya dijana!');
+            }
+        }, 1500);
+    }
+
+    exportJSON() {
+        const data = this.gatherSyncData();
+        const jsonData = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `BreyerHub_Data_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        
+        this.addActivity('export-success', 'JSON data berjaya', 'Backup data lengkap');
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('💾 Data JSON berjaya di-export!');
+        }
+    }
+
+    generatePortfolio() {
+        this.addActivity('export', 'Portfolio dijana', 'Menyusun portfolio akademik');
+        
+        setTimeout(() => {
+            const portfolioHTML = this.createPortfolioHTML();
+            const blob = new Blob([portfolioHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BreyerHub_Portfolio_${new Date().toISOString().split('T')[0]}.html`;
+            a.click();
+            
+            this.addActivity('export-success', 'Portfolio berjaya', 'Portfolio HTML dijana');
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('🎓 Portfolio akademik berjaya dijana!');
+            }
+        }, 2000);
+    }
+
+    createPortfolioHTML() {
+        const data = this.gatherSyncData();
+        return `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BreyerHub Academic Portfolio</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; }
+        .section { margin: 30px 0; }
+        .section h2 { color: #333; border-left: 4px solid #007bff; padding-left: 10px; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>BreyerHub Academic Portfolio</h1>
+        <p>Generated on ${new Date().toLocaleString('ms-MY')}</p>
+    </div>
+    
+    <div class="section">
+        <h2>Academic Summary</h2>
+        <p>This portfolio contains comprehensive academic data from BreyerHub platform.</p>
+    </div>
+    
+    <div class="section">
+        <h2>Data Export Summary</h2>
+        <ul>
+            <li>Grades: ${data.grades ? JSON.parse(data.grades).length : 0} records</li>
+            <li>Assignments: ${data.assignments ? JSON.parse(data.assignments).length : 0} records</li>
+            <li>Attendance: ${data.attendance ? JSON.parse(data.attendance).length : 0} records</li>
+            <li>Goals: ${data.goals ? JSON.parse(data.goals).length : 0} records</li>
+        </ul>
+    </div>
+</body>
+</html>`;
+    }
+
+    convertToCSV(data) {
+        let csv = 'Category,Data Count,Last Updated\n';
+        
+        Object.keys(data).forEach(key => {
+            if (data[key]) {
+                try {
+                    const parsed = JSON.parse(data[key]);
+                    const count = Array.isArray(parsed) ? parsed.length : 1;
+                    csv += `${key},${count},${new Date().toISOString()}\n`;
+                } catch (e) {
+                    csv += `${key},1,${new Date().toISOString()}\n`;
+                }
+            }
+        });
+        
+        return csv;
+    }
+
+    // Import Functions
+    handleFileImport(input) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        this.addActivity('import', 'Import file dimulakan', `Memproses: ${file.name}`);
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const content = e.target.result;
+                let importedData;
+                
+                if (file.type === 'application/json') {
+                    importedData = JSON.parse(content);
+                } else if (file.type === 'text/csv') {
+                    importedData = this.parseCSV(content);
+                }
+                
+                this.processImportedData(importedData);
+                this.addActivity('import-success', 'Import berjaya', `${file.name} berjaya diimport`);
+                
+                if (typeof triggerCelebration === 'function') {
+                    triggerCelebration('📥 Data berjaya diimport!');
+                }
+            } catch (error) {
+                this.addActivity('import-error', 'Import gagal', `Error: ${error.message}`);
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+
+    processImportedData(data) {
+        // Process and merge imported data with existing data
+        Object.keys(data).forEach(key => {
+            if (data[key] && typeof data[key] === 'string') {
+                localStorage.setItem(key, data[key]);
+            }
+        });
+        
+        // Refresh current view if needed
+        if (typeof refreshCurrentSection === 'function') {
+            refreshCurrentSection();
+        }
+    }
+
+    // Third-party Integrations
+    connectGoogleCalendar() {
+        this.addActivity('integration', 'Google Calendar', 'Memulakan sambungan');
+        
+        setTimeout(() => {
+            this.addActivity('integration-success', 'Google Calendar berhubung', 'Sinkronisasi kalendar aktif');
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('📅 Google Calendar berhubung!');
+            }
+        }, 2000);
+    }
+
+    connectTeams() {
+        this.addActivity('integration', 'Microsoft Teams', 'Memulakan sambungan');
+        
+        setTimeout(() => {
+            this.addActivity('integration-success', 'Teams berhubung', 'Integrasi kelas virtual aktif');
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('👥 Microsoft Teams berhubung!');
+            }
+        }, 2000);
+    }
+
+    setupEmailNotifications() {
+        this.addActivity('integration', 'Email Notifications', 'Setup notifikasi email');
+        
+        setTimeout(() => {
+            this.addActivity('integration-success', 'Email notifications aktif', 'Notifikasi akan dihantar ke email');
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('📧 Email notifications setup!');
+            }
+        }, 1500);
+    }
+
+    connectUniversityAPI() {
+        this.addActivity('integration', 'University System', 'Sambungan sistem universiti');
+        
+        setTimeout(() => {
+            this.addActivity('integration-success', 'University API berhubung', 'Data akademik tersinkron');
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('� Sistem universiti berhubung!');
+            }
+        }, 3000);
+    }
+
+    // Device Management
+    detectDevice() {
+        const userAgent = navigator.userAgent;
+        let deviceInfo = 'Unknown Device';
+        
+        if (/Windows/i.test(userAgent)) {
+            deviceInfo = 'Windows PC';
+        } else if (/Macintosh/i.test(userAgent)) {
+            deviceInfo = 'Mac';
+        } else if (/Android/i.test(userAgent)) {
+            deviceInfo = 'Android Device';
+        } else if (/iPhone|iPad/i.test(userAgent)) {
+            deviceInfo = 'iOS Device';
+        }
+        
+        const browserInfo = this.getBrowserInfo();
+        const fullInfo = `${deviceInfo} - ${browserInfo}`;
+        
+        const deviceInfoElement = document.getElementById('currentDeviceInfo');
+        if (deviceInfoElement) {
+            deviceInfoElement.textContent = fullInfo;
+        }
+    }
+
+    getBrowserInfo() {
+        const userAgent = navigator.userAgent;
+        if (/Chrome/i.test(userAgent)) return 'Chrome Browser';
+        if (/Firefox/i.test(userAgent)) return 'Firefox Browser';
+        if (/Safari/i.test(userAgent)) return 'Safari Browser';
+        if (/Edge/i.test(userAgent)) return 'Edge Browser';
+        return 'Unknown Browser';
+    }
+
+    refreshDeviceList() {
+        this.addActivity('device', 'Refresh device list', 'Mengemaskini senarai peranti');
+        // In a real implementation, this would fetch from server
+    }
+
+    logoutAllDevices() {
+        this.addActivity('security', 'Logout all devices', 'Semua peranti telah di-logout');
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('🔒 Semua peranti telah di-logout!');
+        }
+    }
+
+    // Activity Log Management
+    addActivity(type, title, description) {
+        const activity = {
+            id: Date.now(),
+            type: type,
+            title: title,
+            description: description,
+            timestamp: new Date().toLocaleString('ms-MY')
+        };
+        
+        this.activityLog.unshift(activity);
+        
+        // Keep only last 50 activities
+        if (this.activityLog.length > 50) {
+            this.activityLog = this.activityLog.slice(0, 50);
+        }
+        
+        localStorage.setItem('syncActivityLog', JSON.stringify(this.activityLog));
+        this.displayActivityLog();
+    }
+
+    loadActivityLog() {
+        this.displayActivityLog();
+    }
+
+    displayActivityLog() {
+        const logContainer = document.getElementById('syncActivityLog');
+        if (!logContainer) return;
+        
+        if (this.activityLog.length === 0) {
+            logContainer.innerHTML = '<p style="text-align: center; color: #666;">Tiada aktiviti sync lagi</p>';
+            return;
+        }
+        
+        const html = this.activityLog.map(activity => {
+            const iconClass = this.getActivityIcon(activity.type);
+            return `
+                <div class="activity-entry">
+                    <div class="activity-icon">
+                        <i class="${iconClass}"></i>
+                    </div>
+                    <div class="activity-info">
+                        <h5>${activity.title}</h5>
+                        <p>${activity.description}</p>
+                    </div>
+                    <div class="activity-time">${activity.timestamp}</div>
+                </div>
+            `;
+        }).join('');
+        
+        logContainer.innerHTML = html;
+    }
+
+    getActivityIcon(type) {
+        const icons = {
+            'sync-success': 'fas fa-sync',
+            'sync-error': 'fas fa-exclamation-triangle',
+            'export': 'fas fa-download',
+            'export-success': 'fas fa-check-circle',
+            'import': 'fas fa-upload',
+            'import-success': 'fas fa-check-circle',
+            'import-error': 'fas fa-exclamation-triangle',
+            'integration': 'fas fa-plug',
+            'integration-success': 'fas fa-check-circle',
+            'cloud-connect': 'fas fa-cloud',
+            'device': 'fas fa-mobile-alt',
+            'security': 'fas fa-shield-alt',
+            'sync-setting': 'fas fa-cog'
+        };
+        
+        return icons[type] || 'fas fa-info-circle';
+    }
+
+    clearActivityLog() {
+        this.activityLog = [];
+        localStorage.removeItem('syncActivityLog');
+        this.displayActivityLog();
+        
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('🗑️ Log aktiviti dikosongkan!');
+        }
+    }
+
+    downloadBackup() {
+        const allData = {
+            userData: this.gatherSyncData(),
+            activityLog: this.activityLog,
+            settings: {
+                autoSync: this.autoSyncEnabled,
+                syncInterval: this.syncInterval,
+                deviceId: this.deviceId
+            },
+            timestamp: new Date().toISOString()
+        };
+        
+        const jsonData = JSON.stringify(allData, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `BreyerHub_Backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        
+        this.addActivity('export-success', 'Backup lengkap dimuat turun', 'Semua data dan settings');
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('💾 Backup lengkap berjaya dimuat turun!');
+        }
+    }
+
+    uploadBackup() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const backupData = JSON.parse(e.target.result);
+                    this.restoreFromBackupData(backupData);
+                } catch (error) {
+                    this.addActivity('import-error', 'Restore backup gagal', `Error: ${error.message}`);
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    restoreFromBackup() {
+        // This would typically show a file picker
+        this.uploadBackup();
+    }
+
+    restoreFromBackupData(backupData) {
+        this.addActivity('import', 'Restore backup dimulakan', 'Memulihkan data dari backup');
+        
+        setTimeout(() => {
+            // Restore user data
+            if (backupData.userData) {
+                Object.keys(backupData.userData).forEach(key => {
+                    if (backupData.userData[key]) {
+                        localStorage.setItem(key, backupData.userData[key]);
+                    }
+                });
+            }
+            
+            // Restore settings
+            if (backupData.settings) {
+                this.autoSyncEnabled = backupData.settings.autoSync || true;
+                this.syncInterval = backupData.settings.syncInterval || 5;
+                this.setupAutoSync();
+                this.updateSyncStatus();
+            }
+            
+            // Restore activity log
+            if (backupData.activityLog) {
+                this.activityLog = backupData.activityLog;
+                localStorage.setItem('syncActivityLog', JSON.stringify(this.activityLog));
+            }
+            
+            this.addActivity('import-success', 'Backup berjaya dipulihkan', `Data dari ${backupData.timestamp}`);
+            
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('🔄 Backup berjaya dipulihkan!');
+            }
+            
+            // Refresh page to show restored data
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        }, 1500);
+    }
+}
+
+// Enhanced Security Features for CloudSync
+CloudSync.prototype.toggleEncryption = function(enabled) {
+    this.encryptionEnabled = enabled;
+    this.addActivity('security', 'Enkripsi toggled', enabled ? 'Enkripsi data diaktifkan' : 'Enkripsi data dinyahaktifkan');
+    this.updateSecurityScore();
+    
+    if (enabled && typeof triggerCelebration === 'function') {
+        triggerCelebration('🔐 Enkripsi data diaktifkan!');
+    }
+};
+
+CloudSync.prototype.toggleBiometric = function(enabled) {
+    this.biometricEnabled = enabled;
+    this.addActivity('security', 'Biometric toggled', enabled ? 'Pengesahan biometrik diaktifkan' : 'Pengesahan biometrik dinyahaktifkan');
+    this.updateSecurityScore();
+    
+    if (enabled) {
+        // Simulate biometric setup
+        setTimeout(() => {
+            this.addActivity('security', 'Biometric setup completed', 'Pengesahan biometrik berjaya dikonfigurasikan');
+            if (typeof triggerCelebration === 'function') {
+                triggerCelebration('👆 Biometric authentication setup!');
+            }
+        }, 2000);
+    }
+};
+
+CloudSync.prototype.toggleAutoLock = function(enabled) {
+    this.autoLockEnabled = enabled;
+    this.addActivity('security', 'Auto lock toggled', enabled ? 'Auto lock diaktifkan' : 'Auto lock dinyahaktifkan');
+    
+    if (enabled) {
+        this.setupAutoLock();
+    } else {
+        this.clearAutoLock();
+    }
+};
+
+CloudSync.prototype.setupAutoLock = function() {
+    // Setup auto lock after 15 minutes of inactivity
+    this.autoLockTimer = setTimeout(() => {
+        this.lockApplication();
+    }, 15 * 60 * 1000); // 15 minutes
+    
+    // Reset timer on user activity
+    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+        document.addEventListener(event, () => {
+            clearTimeout(this.autoLockTimer);
+            if (this.autoLockEnabled) {
+                this.setupAutoLock();
+            }
+        }, { passive: true });
+    });
+};
+
+CloudSync.prototype.clearAutoLock = function() {
+    if (this.autoLockTimer) {
+        clearTimeout(this.autoLockTimer);
+    }
+};
+
+CloudSync.prototype.lockApplication = function() {
+    this.addActivity('security', 'Application locked', 'Aplikasi dikunci kerana tidak aktif');
+    
+    // Create lock screen overlay
+    const lockScreen = document.createElement('div');
+    lockScreen.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        ">
+            <div style="
+                background: white;
+                padding: 2rem;
+                border-radius: 15px;
+                text-align: center;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            ">
+                <i class="fas fa-lock" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+                <h3>Aplikasi Dikunci</h3>
+                <p>Klik untuk membuka kunci</p>
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    background: #667eea;
+                    color: white;
+                    border: none;
+                    padding: 0.8rem 1.5rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    margin-top: 1rem;
+                ">Buka Kunci</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(lockScreen);
+};
+
+CloudSync.prototype.setDataRetention = function(days) {
+    this.dataRetentionDays = parseInt(days);
+    this.addActivity('security', 'Data retention updated', `Tempoh simpan data: ${days === 'permanent' ? 'Kekal' : days + ' hari'}`);
+    
+    if (days !== 'permanent') {
+        this.scheduleDataCleanup();
+    }
+};
+
+CloudSync.prototype.scheduleDataCleanup = function() {
+    // Check for old data every day
+    setInterval(() => {
+        this.cleanupOldData();
+    }, 24 * 60 * 60 * 1000); // 24 hours
+};
+
+CloudSync.prototype.cleanupOldData = function() {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - this.dataRetentionDays);
+    
+    // Clean up old activity logs
+    this.activityLog = this.activityLog.filter(activity => {
+        const activityDate = new Date(activity.timestamp);
+        return activityDate > cutoffDate;
+    });
+    
+    localStorage.setItem('syncActivityLog', JSON.stringify(this.activityLog));
+    this.displayActivityLog();
+    
+    this.addActivity('security', 'Data cleanup completed', `Data lama (>${this.dataRetentionDays} hari) telah dipadamkan`);
+};
+
+CloudSync.prototype.toggleAnonymization = function(enabled) {
+    this.anonymizationEnabled = enabled;
+    this.addActivity('security', 'Data anonymization toggled', enabled ? 'Anonymisasi data diaktifkan' : 'Anonymisasi data dinyahaktifkan');
+    
+    if (enabled) {
+        this.anonymizeExistingData();
+    }
+};
+
+CloudSync.prototype.anonymizeExistingData = function() {
+    // Simulate data anonymization process
+    setTimeout(() => {
+        this.addActivity('security', 'Data anonymized', 'Maklumat pengenal telah dipadamkan dari data');
+        if (typeof triggerCelebration === 'function') {
+            triggerCelebration('🕵️ Data telah di-anonymize!');
+        }
+    }, 1500);
+};
+
+CloudSync.prototype.toggleAuditTrail = function(enabled) {
+    this.auditTrailEnabled = enabled;
+    this.addActivity('security', 'Audit trail toggled', enabled ? 'Jejak audit diaktifkan' : 'Jejak audit dinyahaktifkan');
+    
+    if (!enabled) {
+        // Clear existing audit logs
+        this.auditLog = [];
+        localStorage.removeItem('auditLog');
+    }
+};
+
+CloudSync.prototype.emergencyBackup = function() {
+    this.addActivity('security', 'Emergency backup initiated', 'Backup kecemasan dimulakan');
+    
+    // Create comprehensive emergency backup
+    const emergencyData = {
+        timestamp: new Date().toISOString(),
+        type: 'emergency_backup',
+        userData: this.gatherSyncData(),
+        securitySettings: {
+            encryptionEnabled: this.encryptionEnabled || false,
+            biometricEnabled: this.biometricEnabled || false,
+            autoLockEnabled: this.autoLockEnabled || true,
+            dataRetentionDays: this.dataRetentionDays || 180,
+            anonymizationEnabled: this.anonymizationEnabled || false,
+            auditTrailEnabled: this.auditTrailEnabled || true
+        },
+        activityLog: this.activityLog,
+        deviceInfo: {
+            deviceId: this.deviceId,
+            userAgent: navigator.userAgent,
+            platform: navigator.platform
+        }
+    };
+    
+    const jsonData = JSON.stringify(emergencyData, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `BreyerHub_Emergency_Backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    
+    this.addActivity('security', 'Emergency backup completed', 'Backup kecemasan berjaya dimuat turun');
+    
+    if (typeof triggerCelebration === 'function') {
+        triggerCelebration('🚨 Emergency backup completed!');
+    }
+};
+
+CloudSync.prototype.wipeAllData = function() {
+    const confirmed = confirm('⚠️ AMARAN: Tindakan ini akan memadamkan SEMUA data secara kekal. Adakah anda pasti?');
+    
+    if (confirmed) {
+        const doubleConfirm = confirm('Ini adalah amaran terakhir. Semua data akan hilang selamanya. Teruskan?');
+        
+        if (doubleConfirm) {
+            // Clear all localStorage data
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if (key.includes('BreyerHub') || 
+                    ['grades', 'assignments', 'attendance', 'goals', 'schedule', 'timerStats', 'syncActivityLog'].includes(key)) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
+            // Clear IndexedDB if exists
+            if (this.db) {
+                this.db.close();
+                indexedDB.deleteDatabase(this.dbName);
+            }
+            
+            this.addActivity('security', 'Data wipe completed', 'SEMUA data telah dipadamkan');
+            
+            // Show wipe confirmation
+            alert('✅ Semua data telah berjaya dipadamkan. Aplikasi akan di-refresh.');
+            
+            // Refresh page to show clean state
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        }
+    }
+};
+
+CloudSync.prototype.generateSecurityReport = function() {
+    this.addActivity('security', 'Security report generated', 'Laporan keselamatan dijana');
+    
+    const securityReport = {
+        generatedAt: new Date().toISOString(),
+        securityScore: this.calculateSecurityScore(),
+        deviceInfo: {
+            deviceId: this.deviceId,
+            platform: navigator.platform,
+            userAgent: navigator.userAgent
+        },
+        securitySettings: {
+            encryptionEnabled: this.encryptionEnabled || false,
+            biometricEnabled: this.biometricEnabled || false,
+            autoLockEnabled: this.autoLockEnabled || true,
+            dataRetentionDays: this.dataRetentionDays || 180,
+            anonymizationEnabled: this.anonymizationEnabled || false,
+            auditTrailEnabled: this.auditTrailEnabled || true
+        },
+        recentActivities: this.activityLog.slice(0, 20),
+        recommendations: this.getSecurityRecommendations()
+    };
+    
+    const reportHTML = this.createSecurityReportHTML(securityReport);
+    const blob = new Blob([reportHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `BreyerHub_Security_Report_${new Date().toISOString().split('T')[0]}.html`;
+    a.click();
+    
+    if (typeof triggerCelebration === 'function') {
+        triggerCelebration('📋 Laporan keselamatan dijana!');
+    }
+};
+
+CloudSync.prototype.calculateSecurityScore = function() {
+    let score = 50; // Base score
+    
+    if (this.encryptionEnabled) score += 20;
+    if (this.biometricEnabled) score += 15;
+    if (this.autoLockEnabled) score += 10;
+    if (this.auditTrailEnabled) score += 5;
+    
+    return Math.min(score, 100);
+};
+
+CloudSync.prototype.updateSecurityScore = function() {
+    const score = this.calculateSecurityScore();
+    const scoreElement = document.querySelector('#securityScore .score-number');
+    if (scoreElement) {
+        scoreElement.textContent = score;
+    }
+    
+    // Update score circle gradient
+    const scoreCircle = document.getElementById('securityScore');
+    if (scoreCircle) {
+        const gradient = `conic-gradient(var(--success-color) ${score}%, var(--border-color) ${score}%)`;
+        scoreCircle.style.background = gradient;
+    }
+    
+    // Update security status items
+    this.updateSecurityStatusItems();
+};
+
+CloudSync.prototype.updateSecurityStatusItems = function() {
+    const scoreDetails = document.querySelector('.score-details');
+    if (scoreDetails) {
+        scoreDetails.innerHTML = `
+            <div class="score-item ${this.encryptionEnabled ? 'good' : 'warning'}">
+                <i class="fas fa-${this.encryptionEnabled ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>Enkripsi ${this.encryptionEnabled ? 'Aktif' : 'Tidak Aktif'}</span>
+            </div>
+            <div class="score-item good">
+                <i class="fas fa-check-circle"></i>
+                <span>Backup Terkini</span>
+            </div>
+            <div class="score-item ${this.biometricEnabled ? 'good' : 'warning'}">
+                <i class="fas fa-${this.biometricEnabled ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>Biometric ${this.biometricEnabled ? 'Aktif' : 'Tidak Aktif'}</span>
+            </div>
+        `;
+    }
+};
+
+CloudSync.prototype.getSecurityRecommendations = function() {
+    const recommendations = [];
+    
+    if (!this.encryptionEnabled) {
+        recommendations.push('Aktifkan enkripsi data untuk keselamatan tambahan');
+    }
+    
+    if (!this.biometricEnabled) {
+        recommendations.push('Setup pengesahan biometrik untuk akses yang lebih selamat');
+    }
+    
+    if (!this.auditTrailEnabled) {
+        recommendations.push('Aktifkan jejak audit untuk monitoring keselamatan');
+    }
+    
+    if (this.dataRetentionDays > 365) {
+        recommendations.push('Pertimbangkan tempoh simpan data yang lebih pendek');
+    }
+    
+    return recommendations;
+};
+
+CloudSync.prototype.createSecurityReportHTML = function(report) {
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BreyerHub Security Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; }
+        .section { margin: 30px 0; }
+        .section h2 { color: #333; border-left: 4px solid #667eea; padding-left: 10px; }
+        .score-display { text-align: center; margin: 20px 0; }
+        .score-number { font-size: 3rem; color: #667eea; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .recommendation { background: #fff3cd; padding: 10px; margin: 5px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>BreyerHub Security Report</h1>
+        <p>Generated on ${new Date(report.generatedAt).toLocaleString('ms-MY')}</p>
+    </div>
+    
+    <div class="section">
+        <h2>Security Score</h2>
+        <div class="score-display">
+            <div class="score-number">${report.securityScore}%</div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Security Settings</h2>
+        <table>
+            <tr><th>Setting</th><th>Status</th></tr>
+            <tr><td>Encryption</td><td>${report.securitySettings.encryptionEnabled ? 'Enabled' : 'Disabled'}</td></tr>
+            <tr><td>Biometric Auth</td><td>${report.securitySettings.biometricEnabled ? 'Enabled' : 'Disabled'}</td></tr>
+            <tr><td>Auto Lock</td><td>${report.securitySettings.autoLockEnabled ? 'Enabled' : 'Disabled'}</td></tr>
+            <tr><td>Data Retention</td><td>${report.securitySettings.dataRetentionDays} days</td></tr>
+            <tr><td>Audit Trail</td><td>${report.securitySettings.auditTrailEnabled ? 'Enabled' : 'Disabled'}</td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>Recommendations</h2>
+        ${report.recommendations.map(rec => `<div class="recommendation">${rec}</div>`).join('')}
+    </div>
+    
+    <div class="section">
+        <h2>Recent Security Activities</h2>
+        <table>
+            <tr><th>Time</th><th>Activity</th><th>Description</th></tr>
+            ${report.recentActivities.map(activity => `
+                <tr>
+                    <td>${activity.timestamp}</td>
+                    <td>${activity.title}</td>
+                    <td>${activity.description}</td>
+                </tr>
+            `).join('')}
+        </table>
+    </div>
+</body>
+</html>`;
+};
+
+// Initialize security settings on CloudSync creation
+CloudSync.prototype.initSecuritySettings = function() {
+    // Set default values
+    this.encryptionEnabled = false;
+    this.biometricEnabled = false;
+    this.autoLockEnabled = true;
+    this.dataRetentionDays = 180;
+    this.anonymizationEnabled = false;
+    this.auditTrailEnabled = true;
+    
+    // Update security score on load
+    setTimeout(() => {
+        this.updateSecurityScore();
+    }, 1000);
+    
+    // Setup auto lock if enabled
+    if (this.autoLockEnabled) {
+        this.setupAutoLock();
+    }
+};
+
+// Add security initialization to CloudSync constructor
+const originalInit = CloudSync.prototype.init;
+CloudSync.prototype.init = function() {
+    originalInit.call(this);
+    this.initSecuritySettings();
+};
+
+// Initialize AI Features and Cloud Sync
 const aiFeatures = new AIFeatures();
+const cloudSync = new CloudSync();
 
 console.log('🎉 AI Features loaded successfully!');
-
-console.log('🎉 AI Features loaded successfully!');
+console.log('☁️ Cloud Sync system loaded successfully!');

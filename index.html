@@ -67,6 +67,7 @@
                 <li><a href="#program-tools" class="nav-link" data-section="program-tools"><i class="fas fa-tools"></i> Alat Program</a></li>
                 <li><a href="#analytics" class="nav-link" data-section="analytics"><i class="fas fa-chart-line"></i> Analitik</a></li>
                 <li><a href="#ai-features" class="nav-link" data-section="ai-features"><i class="fas fa-brain"></i> AI Pintar</a></li>
+                <li><a href="#cloud-sync" class="nav-link" data-section="cloud-sync"><i class="fas fa-cloud"></i> Cloud Sync</a></li>
                 <li><a href="#goals" class="nav-link" data-section="goals"><i class="fas fa-bullseye"></i> Matlamat</a></li>
                 <li><a href="#timer" class="nav-link" data-section="timer"><i class="fas fa-clock"></i> Study Timer</a></li>
                 <li><a href="#calculator" class="nav-link" data-section="calculator"><i class="fas fa-calculator"></i> Kalkulator GPA</a></li>
@@ -490,6 +491,342 @@
                     </div>
                     
                     <div id="careerGuidance" class="ai-results" style="display: none;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cloud Sync & Integration Section -->
+        <section id="cloud-sync" class="main-section">
+            <div class="container">
+                <h2><i class="fas fa-cloud"></i> Cloud Sync & Integration</h2>
+                
+                <!-- Sync Status Dashboard -->
+                <div class="tracker-card">
+                    <h3><i class="fas fa-tachometer-alt"></i> Status Sinkronisasi</h3>
+                    <div class="sync-status-grid">
+                        <div class="sync-status-item">
+                            <div class="status-icon" id="localStatus">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="status-info">
+                                <h4>Data Lokal</h4>
+                                <span class="status-text" id="localStatusText">Tersedia</span>
+                                <div class="last-update" id="localLastUpdate">Dikemaskini: Hari ini</div>
+                            </div>
+                        </div>
+                        
+                        <div class="sync-status-item">
+                            <div class="status-icon" id="cloudStatus">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <div class="status-info">
+                                <h4>Cloud Storage</h4>
+                                <span class="status-text" id="cloudStatusText">Menghubung...</span>
+                                <div class="last-update" id="cloudLastUpdate">Sinkronisasi terakhir: -</div>
+                            </div>
+                        </div>
+                        
+                        <div class="sync-status-item">
+                            <div class="status-icon" id="syncStatus">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <div class="status-info">
+                                <h4>Auto Sync</h4>
+                                <span class="status-text" id="syncStatusText">Aktif</span>
+                                <div class="last-update">Interval: 5 minit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cloud Sync Controls -->
+                <div class="tracker-card">
+                    <h3><i class="fas fa-cloud-upload-alt"></i> Kawalan Sinkronisasi</h3>
+                    <div class="sync-controls">
+                        <div class="control-group">
+                            <button class="btn primary" onclick="cloudSync.manualSync()">
+                                <i class="fas fa-sync"></i> Sinkronkan Sekarang
+                            </button>
+                            <button class="btn secondary" onclick="cloudSync.downloadBackup()">
+                                <i class="fas fa-download"></i> Muat Turun Backup
+                            </button>
+                            <button class="btn secondary" onclick="cloudSync.uploadBackup()">
+                                <i class="fas fa-upload"></i> Muat Naik Backup
+                            </button>
+                        </div>
+                        
+                        <div class="sync-settings">
+                            <div class="setting-item">
+                                <label class="switch">
+                                    <input type="checkbox" id="autoSyncToggle" checked onchange="cloudSync.toggleAutoSync(this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span>Auto Sync</span>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label for="syncInterval">Interval Sync (minit):</label>
+                                <select id="syncInterval" onchange="cloudSync.setSyncInterval(this.value)">
+                                    <option value="1">1 minit</option>
+                                    <option value="5" selected>5 minit</option>
+                                    <option value="15">15 minit</option>
+                                    <option value="30">30 minit</option>
+                                    <option value="60">1 jam</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export/Import Tools -->
+                <div class="tracker-card">
+                    <h3><i class="fas fa-exchange-alt"></i> Export & Import Data</h3>
+                    <div class="export-import-tools">
+                        <div class="tool-section">
+                            <h4><i class="fas fa-file-export"></i> Export Data</h4>
+                            <div class="export-options">
+                                <button class="btn success" onclick="cloudSync.exportToPDF()">
+                                    <i class="fas fa-file-pdf"></i> Export PDF Transcript
+                                </button>
+                                <button class="btn success" onclick="cloudSync.exportToExcel()">
+                                    <i class="fas fa-file-excel"></i> Export Excel Report
+                                </button>
+                                <button class="btn success" onclick="cloudSync.exportJSON()">
+                                    <i class="fas fa-file-code"></i> Export JSON Data
+                                </button>
+                                <button class="btn success" onclick="cloudSync.generatePortfolio()">
+                                    <i class="fas fa-briefcase"></i> Generate Portfolio
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-section">
+                            <h4><i class="fas fa-file-import"></i> Import Data</h4>
+                            <div class="import-options">
+                                <input type="file" id="importFile" accept=".json,.csv,.xlsx" style="display: none;" onchange="cloudSync.handleFileImport(this)">
+                                <button class="btn info" onclick="document.getElementById('importFile').click()">
+                                    <i class="fas fa-upload"></i> Import File
+                                </button>
+                                <button class="btn info" onclick="cloudSync.importFromGoogleSheets()">
+                                    <i class="fab fa-google"></i> Import Google Sheets
+                                </button>
+                                <button class="btn info" onclick="cloudSync.restoreFromBackup()">
+                                    <i class="fas fa-history"></i> Restore Backup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Third-party Integrations -->
+                <div class="tracker-card">
+                    <h3><i class="fas fa-plug"></i> Integrasi Third-party</h3>
+                    <div class="integrations-grid">
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h4>Google Calendar</h4>
+                                <p>Sinkronkan jadual kelas dan deadline tugasan</p>
+                                <button class="btn primary" onclick="cloudSync.connectGoogleCalendar()">
+                                    <i class="fas fa-link"></i> Sambung
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fab fa-microsoft"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h4>Microsoft Teams</h4>
+                                <p>Integrasi dengan kelas virtual dan tugasan</p>
+                                <button class="btn primary" onclick="cloudSync.connectTeams()">
+                                    <i class="fas fa-link"></i> Sambung
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h4>Email Notifications</h4>
+                                <p>Terima notifikasi penting melalui email</p>
+                                <button class="btn primary" onclick="cloudSync.setupEmailNotifications()">
+                                    <i class="fas fa-link"></i> Setup
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="integration-card">
+                            <div class="integration-icon">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div class="integration-info">
+                                <h4>University System</h4>
+                                <p>Sambung dengan sistem universiti</p>
+                                <button class="btn primary" onclick="cloudSync.connectUniversityAPI()">
+                                    <i class="fas fa-link"></i> Sambung
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Device Management -->
+                <div class="tracker-card">
+                    <h3><i class="fas fa-mobile-alt"></i> Pengurusan Peranti</h3>
+                    <div class="device-list" id="deviceList">
+                        <div class="device-item current-device">
+                            <div class="device-icon">
+                                <i class="fas fa-laptop"></i>
+                            </div>
+                            <div class="device-info">
+                                <h4>Peranti Semasa</h4>
+                                <p id="currentDeviceInfo">Windows PC - Chrome Browser</p>
+                                <span class="device-status online">Online</span>
+                            </div>
+                            <div class="device-actions">
+                                <span class="current-badge">Semasa</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="device-controls">
+                        <button class="btn secondary" onclick="cloudSync.refreshDeviceList()">
+                            <i class="fas fa-sync"></i> Refresh Senarai Peranti
+                        </button>
+                        <button class="btn warning" onclick="cloudSync.logoutAllDevices()">
+                            <i class="fas fa-sign-out-alt"></i> Log Out Semua Peranti
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sync Activity Log -->
+                <div class="tracker-card">
+                    <h3><i class="fas fa-history"></i> Log Aktiviti Sync</h3>
+                    <div class="activity-log" id="syncActivityLog">
+                        <!-- Activity entries will be populated by JavaScript -->
+                    </div>
+                    <button class="btn secondary" onclick="cloudSync.clearActivityLog()">
+                        <i class="fas fa-trash"></i> Kosongkan Log
+                    </button>
+                </div>
+
+                <!-- Advanced Security Settings -->
+                <div class="tracker-card">
+                    <h3><i class="fas fa-shield-alt"></i> Tetapan Keselamatan</h3>
+                    <div class="security-settings">
+                        <div class="security-section">
+                            <h4><i class="fas fa-lock"></i> Kawalan Akses</h4>
+                            <div class="security-options">
+                                <div class="setting-item">
+                                    <label class="switch">
+                                        <input type="checkbox" id="enableEncryption" onchange="cloudSync.toggleEncryption(this.checked)">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span>Enkripsi Data Lokal</span>
+                                    <small>Menggunakan AES-256 untuk melindungi data</small>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <label class="switch">
+                                        <input type="checkbox" id="enableBiometric" onchange="cloudSync.toggleBiometric(this.checked)">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span>Pengesahan Biometrik</span>
+                                    <small>Gunakan cap jari atau face recognition</small>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <label class="switch">
+                                        <input type="checkbox" id="autoLock" checked onchange="cloudSync.toggleAutoLock(this.checked)">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span>Auto Lock</span>
+                                    <small>Kunci aplikasi selepas tidak aktif</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="security-section">
+                            <h4><i class="fas fa-user-shield"></i> Privasi Data</h4>
+                            <div class="privacy-controls">
+                                <div class="setting-item">
+                                    <label for="dataRetention">Tempoh Simpan Data:</label>
+                                    <select id="dataRetention" onchange="cloudSync.setDataRetention(this.value)">
+                                        <option value="30">30 hari</option>
+                                        <option value="90">90 hari</option>
+                                        <option value="180" selected>6 bulan</option>
+                                        <option value="365">1 tahun</option>
+                                        <option value="permanent">Kekal</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <label class="switch">
+                                        <input type="checkbox" id="anonymizeData" onchange="cloudSync.toggleAnonymization(this.checked)">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span>Anonymisasi Data</span>
+                                    <small>Buang maklumat pengenal peribadi</small>
+                                </div>
+                                
+                                <div class="setting-item">
+                                    <label class="switch">
+                                        <input type="checkbox" id="auditTrail" checked onchange="cloudSync.toggleAuditTrail(this.checked)">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span>Jejak Audit</span>
+                                    <small>Log semua aktiviti untuk keselamatan</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="security-section">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Tindakan Kecemasan</h4>
+                            <div class="emergency-actions">
+                                <button class="btn warning" onclick="cloudSync.emergencyBackup()">
+                                    <i class="fas fa-download"></i> Backup Kecemasan
+                                </button>
+                                <button class="btn danger" onclick="cloudSync.wipeAllData()">
+                                    <i class="fas fa-trash-alt"></i> Padam Semua Data
+                                </button>
+                                <button class="btn info" onclick="cloudSync.generateSecurityReport()">
+                                    <i class="fas fa-file-medical"></i> Laporan Keselamatan
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="security-status">
+                            <div class="security-score">
+                                <h4>Skor Keselamatan</h4>
+                                <div class="score-display">
+                                    <div class="score-circle" id="securityScore">
+                                        <span class="score-number">85</span>
+                                        <span class="score-label">%</span>
+                                    </div>
+                                    <div class="score-details">
+                                        <div class="score-item good">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Enkripsi Aktif</span>
+                                        </div>
+                                        <div class="score-item good">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Backup Terkini</span>
+                                        </div>
+                                        <div class="score-item warning">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <span>Biometric Tidak Aktif</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
